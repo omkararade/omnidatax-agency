@@ -1,0 +1,21 @@
+{
+  "overview": "OmniDataX is a premium Data Science and AI Automation services website with a private admin panel for the team to manage case studies. The site features a dark theme with red, white, and grey accents, showcasing data extraction, engineering, and AI automation capabilities.",
+  "features": [
+    "Private admin page gated by Internet Identity login",
+    "Team-only case study management (add, edit, delete)",
+    "Public Case Studies page fetches from backend storage",
+    "Authorization extension with admin role control",
+    "Dark admin dashboard with red/white/grey design",
+    "Existing 4 case studies seeded as initial data"
+  ],
+  "category": "business",
+  "tags": [
+    "data-science",
+    "ai",
+    "admin",
+    "case-studies",
+    "authorization",
+    "internet-identity"
+  ],
+  "last_updated": "2026-04-25T08:57:04.140Z"
+}

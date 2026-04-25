@@ -1,0 +1,108 @@
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UpdateCaseStudyResult = 
+ variant {
+   err: text;
+   ok: CaseStudy;
+ };
+type UpdateCaseStudyInput = 
+ record {
+   approach: text;
+   clientType: text;
+   iconName: text;
+   industry: text;
+   keyMetric: text;
+   keyMetricLabel: text;
+   problem: text;
+   results: vec CaseStudyResult;
+   title: text;
+   tools: vec text;
+ };
+type Timestamp = int;
+type SubmitContactResult = 
+ variant {
+   err: text;
+   ok: ContactId;
+ };
+type SubmitContactInput = 
+ record {
+   email: text;
+   name: text;
+   projectDescription: text;
+   serviceInterest: ServiceInterest;
+ };
+type ServiceInterest = 
+ variant {
+   aiAnalytics;
+   dataEngineering;
+   dataExtraction;
+   other;
+ };
+type CreateCaseStudyResult = 
+ variant {
+   err: text;
+   ok: CaseStudyId;
+ };
+type CreateCaseStudyInput = 
+ record {
+   approach: text;
+   clientType: text;
+   iconName: text;
+   industry: text;
+   keyMetric: text;
+   keyMetricLabel: text;
+   problem: text;
+   results: vec CaseStudyResult;
+   title: text;
+   tools: vec text;
+ };
+type ContactSubmission = 
+ record {
+   email: text;
+   id: nat;
+   name: text;
+   projectDescription: text;
+   serviceInterest: ServiceInterest;
+   submittedAt: Timestamp;
+ };
+type ContactId = nat;
+type CaseStudyResult = 
+ record {
+   description: text;
+   metric: text;
+ };
+type CaseStudyId = nat;
+type CaseStudy = 
+ record {
+   approach: text;
+   clientType: text;
+   createdAt: Timestamp;
+   iconName: text;
+   id: CaseStudyId;
+   industry: text;
+   keyMetric: text;
+   keyMetricLabel: text;
+   problem: text;
+   results: vec CaseStudyResult;
+   title: text;
+   tools: vec text;
+   updatedAt: Timestamp;
+ };
+service : {
+  _initializeAccessControl: () -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  createCaseStudy: (input: CreateCaseStudyInput) -> (CreateCaseStudyResult);
+  deleteCaseStudy: (id: CaseStudyId) -> (bool);
+  getAllCaseStudies: () -> (vec CaseStudy) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCaseStudyById: (id: CaseStudyId) -> (opt CaseStudy) query;
+  getContactSubmissions: () -> (vec ContactSubmission) query;
+  isCallerAdmin: () -> (bool) query;
+  submitContactForm: (input: SubmitContactInput) -> (SubmitContactResult);
+  updateCaseStudy: (id: CaseStudyId, input: UpdateCaseStudyInput) ->
+   (UpdateCaseStudyResult);
+}

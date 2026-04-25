@@ -1,0 +1,67 @@
+// Version: 1.0.0
+type CaseStudyId__87679295 = Nat;
+type CaseStudyResult__1009652239 = {description : Text; metric : Text};
+type CaseStudy__364992108 =
+  {
+    approach : Text;
+    clientType : Text;
+    createdAt : Timestamp__540710752;
+    iconName : Text;
+    id : CaseStudyId__87679295;
+    industry : Text;
+    keyMetric : Text;
+    keyMetricLabel : Text;
+    problem : Text;
+    results : [CaseStudyResult__1009652239];
+    title : Text;
+    tools : [Text];
+    updatedAt : Timestamp__540710752
+  };
+type ContactSubmission__93684224 =
+  {
+    email : Text;
+    id : Nat;
+    name : Text;
+    projectDescription : Text;
+    serviceInterest : ServiceInterest__35501641;
+    submittedAt : Timestamp__306786231
+  };
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type ServiceInterest__35501641 =
+  {#aiAnalytics; #dataEngineering; #dataExtraction; #other};
+type Timestamp__306786231 = Int;
+type Timestamp__540710752 = Int;
+type UserRole__1073662873 = {#admin; #guest; #user};
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable caseStudies :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?CaseStudy__364992108]];
+      var elementIndex : Nat__490723111
+    };
+  stable contactSubmissions :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?ContactSubmission__93684224]];
+      var elementIndex : Nat__490723111
+    };
+  stable var nextCaseStudyId : Nat;
+  stable nextCaseStudyIdRef : {var value : Nat}
+};
