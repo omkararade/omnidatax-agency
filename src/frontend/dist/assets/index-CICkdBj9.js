@@ -29069,7 +29069,7 @@ function sortRoutes(routes) {
   return flatRoutes;
 }
 function processRouteTree({
-  routeTree,
+  routeTree: routeTree2,
   initRoute
 }) {
   const routesById = {};
@@ -29095,7 +29095,7 @@ function processRouteTree({
       }
     });
   };
-  recurseRoutes([routeTree]);
+  recurseRoutes([routeTree2]);
   const flatRoutes = sortRoutes(Object.values(routesById));
   return { routesById, routesByPath, flatRoutes };
 }
@@ -106634,84 +106634,84 @@ function ScrollToTop() {
   }
   return null;
 }
-function RootLayout() {
+function RootShell() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Toaster, { richColors: true, position: "bottom-right" })
+  ] });
+}
+function PublicLayout() {
   const pathname = useRouterState({ select: (s2) => s2.location.pathname });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col bg-background text-foreground", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollToTop, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Nav, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PageTransition, { routeKey: pathname, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Footer, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Toaster, { richColors: true, position: "bottom-right" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Footer, {})
   ] });
 }
 function AdminLayout() {
   const pathname = useRouterState({ select: (s2) => s2.location.pathname });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(PageTransition, { routeKey: pathname, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Toaster, { richColors: true, position: "bottom-right" })
-  ] });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(PageTransition, { routeKey: pathname, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}) });
 }
-const rootRoute = createRootRoute({ component: RootLayout });
-const indexRoute = createRoute({
+const rootRoute = createRootRoute({ component: RootShell });
+const publicLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
+  id: "_public",
+  component: PublicLayout
+});
+const indexRoute = createRoute({
+  getParentRoute: () => publicLayoutRoute,
   path: "/",
   component: HomePage
 });
 const servicesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/services",
   component: ServicesPage
 });
 const useCasesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/use-cases",
   component: UseCasesPage
 });
 const caseStudiesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/case-studies",
   component: CaseStudiesPage
 });
 const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/about",
   component: AboutPage
 });
 const contactRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/contact",
   component: ContactPage
 });
-const adminRootRoute = createRootRoute({ component: AdminLayout });
+const adminLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: "_admin",
+  component: AdminLayout
+});
 const adminCaseStudiesRoute = createRoute({
-  getParentRoute: () => adminRootRoute,
+  getParentRoute: () => adminLayoutRoute,
   path: "/admin/case-studies",
   component: AdminCaseStudiesPage
 });
-const publicRouteTree = rootRoute.addChildren([
-  indexRoute,
-  servicesRoute,
-  useCasesRoute,
-  caseStudiesRoute,
-  aboutRoute,
-  contactRoute
+const routeTree = rootRoute.addChildren([
+  publicLayoutRoute.addChildren([
+    indexRoute,
+    servicesRoute,
+    useCasesRoute,
+    caseStudiesRoute,
+    aboutRoute,
+    contactRoute
+  ]),
+  adminLayoutRoute.addChildren([adminCaseStudiesRoute])
 ]);
-const adminRouteTree = adminRootRoute.addChildren([adminCaseStudiesRoute]);
-const router = createRouter({
-  routeTree: publicRouteTree,
-  history: void 0
-});
-const adminRouter = createRouter({
-  routeTree: adminRouteTree,
-  history: void 0
-});
-function isAdminPath() {
-  return window.location.pathname.startsWith("/admin");
-}
+const router = createRouter({ routeTree });
 function App() {
-  if (isAdminPath()) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(RouterProvider, { router: adminRouter });
-  }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(RouterProvider, { router });
 }
 BigInt.prototype.toJSON = function() {

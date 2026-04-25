@@ -16,7 +16,6 @@ import { AboutPage } from "./pages/About";
 import { AdminCaseStudiesPage } from "./pages/AdminCaseStudies";
 import { CaseStudiesPage } from "./pages/CaseStudies";
 import { ContactPage } from "./pages/Contact";
-// Lazy-ish: just import page components
 import { HomePage } from "./pages/Home";
 import { ServicesPage } from "./pages/Services";
 import { UseCasesPage } from "./pages/UseCases";
@@ -31,7 +30,18 @@ function ScrollToTop() {
   return null;
 }
 
-function RootLayout() {
+// True root — no layout, just renders children
+function RootShell() {
+  return (
+    <>
+      <Outlet />
+      <Toaster richColors position="bottom-right" />
+    </>
+  );
+}
+
+// Public layout: Nav + Footer
+function PublicLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -43,85 +53,89 @@ function RootLayout() {
         </PageTransition>
       </main>
       <Footer />
-      <Toaster richColors position="bottom-right" />
     </div>
   );
 }
 
+// Admin layout: no Nav/Footer
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <>
-      <PageTransition routeKey={pathname}>
-        <Outlet />
-      </PageTransition>
-      <Toaster richColors position="bottom-right" />
-    </>
+    <PageTransition routeKey={pathname}>
+      <Outlet />
+    </PageTransition>
   );
 }
 
-const rootRoute = createRootRoute({ component: RootLayout });
+// ─── Route tree ───────────────────────────────────────────────────────────────
+
+const rootRoute = createRootRoute({ component: RootShell });
+
+// "_public" layout route — path-less, renders Nav+Footer wrapper
+const publicLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: "_public",
+  component: PublicLayout,
+});
 
 const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/",
   component: HomePage,
 });
 const servicesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/services",
   component: ServicesPage,
 });
 const useCasesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/use-cases",
   component: UseCasesPage,
 });
 const caseStudiesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/case-studies",
   component: CaseStudiesPage,
 });
 const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/about",
   component: AboutPage,
 });
 const contactRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => publicLayoutRoute,
   path: "/contact",
   component: ContactPage,
 });
 
-// Admin routes — separate layout (no Nav/Footer)
-const adminRootRoute = createRootRoute({ component: AdminLayout });
+// "_admin" layout route — path-less, renders minimal wrapper (no Nav/Footer)
+const adminLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: "_admin",
+  component: AdminLayout,
+});
 
 const adminCaseStudiesRoute = createRoute({
-  getParentRoute: () => adminRootRoute,
+  getParentRoute: () => adminLayoutRoute,
   path: "/admin/case-studies",
   component: AdminCaseStudiesPage,
 });
 
-const publicRouteTree = rootRoute.addChildren([
-  indexRoute,
-  servicesRoute,
-  useCasesRoute,
-  caseStudiesRoute,
-  aboutRoute,
-  contactRoute,
+// Single unified route tree
+const routeTree = rootRoute.addChildren([
+  publicLayoutRoute.addChildren([
+    indexRoute,
+    servicesRoute,
+    useCasesRoute,
+    caseStudiesRoute,
+    aboutRoute,
+    contactRoute,
+  ]),
+  adminLayoutRoute.addChildren([adminCaseStudiesRoute]),
 ]);
 
-const adminRouteTree = adminRootRoute.addChildren([adminCaseStudiesRoute]);
-
-const router = createRouter({
-  routeTree: publicRouteTree,
-  history: undefined,
-});
-
-const adminRouter = createRouter({
-  routeTree: adminRouteTree,
-  history: undefined,
-});
+const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -129,13 +143,6 @@ declare module "@tanstack/react-router" {
   }
 }
 
-function isAdminPath() {
-  return window.location.pathname.startsWith("/admin");
-}
-
 export default function App() {
-  if (isAdminPath()) {
-    return <RouterProvider router={adminRouter} />;
-  }
   return <RouterProvider router={router} />;
 }
