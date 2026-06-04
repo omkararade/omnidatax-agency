@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import ScrollSectionReveal from "../components/ScrollSectionReveal";
 
 const iconMap: Record<string, LucideIcon> = {
   trending: TrendingUp,
@@ -339,62 +340,64 @@ export function CaseStudiesPage() {
       </section>
 
       {/* Case study grid */}
-      <section
-        className="max-w-5xl mx-auto px-6 py-16 md:py-20"
-        data-ocid="case_studies.list.section"
-      >
-        {isLoading ? (
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-            data-ocid="case_studies.loading_state"
-          >
-            {[1, 2, 3, 4].map((n) => (
-              <CaseStudySkeletonCard key={n} />
-            ))}
-          </div>
-        ) : studies.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-center py-24 space-y-4"
-            data-ocid="case_studies.empty_state"
-          >
-            <div className="relative mx-auto w-16 h-16 mb-4">
-              <div className="absolute inset-0 rounded-full bg-primary/10 blur-xl" />
-              <div className="relative w-16 h-16 rounded-full bg-card border border-primary/20 flex items-center justify-center">
-                <BarChart2 className="w-7 h-7 text-primary/60" />
-              </div>
-            </div>
-            <h3 className="text-xl font-display font-semibold text-foreground">
-              Case studies coming soon
-            </h3>
-            <p className="text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
-              We're documenting our client outcomes. Check back soon or get in
-              touch to discuss your project.
-            </p>
-            <Button
-              asChild
-              className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full"
+      <ScrollSectionReveal variant="pipeline">
+        <section
+          className="max-w-5xl mx-auto px-6 py-16 md:py-20"
+          data-ocid="case_studies.list.section"
+        >
+          {isLoading ? (
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-5"
+              data-ocid="case_studies.loading_state"
             >
-              <Link to="/contact">Start a Conversation</Link>
-            </Button>
-          </motion.div>
-        ) : (
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-5"
-            data-ocid="case_studies.list"
-          >
-            {studies.map((study, index) => (
-              <CaseStudyCard
-                key={study.id.toString()}
-                study={study}
-                index={index}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+              {[1, 2, 3, 4].map((n) => (
+                <CaseStudySkeletonCard key={n} />
+              ))}
+            </div>
+          ) : studies.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-center py-24 space-y-4"
+              data-ocid="case_studies.empty_state"
+            >
+              <div className="relative mx-auto w-16 h-16 mb-4">
+                <div className="absolute inset-0 rounded-full bg-primary/10 blur-xl" />
+                <div className="relative w-16 h-16 rounded-full bg-card border border-primary/20 flex items-center justify-center">
+                  <BarChart2 className="w-7 h-7 text-primary/60" />
+                </div>
+              </div>
+              <h3 className="text-xl font-display font-semibold text-foreground">
+                Case studies coming soon
+              </h3>
+              <p className="text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
+                We're documenting our client outcomes. Check back soon or get in
+                touch to discuss your project.
+              </p>
+              <Button
+                asChild
+                className="mt-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full"
+              >
+                <Link to="/contact">Start a Conversation</Link>
+              </Button>
+            </motion.div>
+          ) : (
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-5"
+              data-ocid="case_studies.list"
+            >
+              {studies.map((study, index) => (
+                <CaseStudyCard
+                  key={study.id.toString()}
+                  study={study}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </ScrollSectionReveal>
 
       {/* Bottom CTA */}
       <section

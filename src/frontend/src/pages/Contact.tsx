@@ -29,6 +29,7 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import ScrollSectionReveal from "../components/ScrollSectionReveal";
 
 interface FormState {
   name: string;
@@ -173,278 +174,284 @@ export function ContactPage() {
       </section>
 
       {/* Trust Badges + Email */}
-      <section
-        className="py-10 bg-background border-b border-border"
-        data-ocid="contact.trust.section"
-      >
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 max-w-3xl mx-auto">
-            {trustBadges.map((badge, i) => {
-              const Icon = badge.icon;
-              return (
-                <motion.div
-                  key={badge.label}
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  data-ocid={`contact.trust.item.${i + 1}`}
-                >
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-foreground leading-tight">
-                      {badge.label}
+      <ScrollSectionReveal variant="data-nodes">
+        <section
+          className="py-10 bg-background border-b border-border"
+          data-ocid="contact.trust.section"
+        >
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 max-w-3xl mx-auto">
+              {trustBadges.map((badge, i) => {
+                const Icon = badge.icon;
+                return (
+                  <motion.div
+                    key={badge.label}
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    data-ocid={`contact.trust.item.${i + 1}`}
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-4 h-4 text-primary" />
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {badge.sublabel}
+                    <div>
+                      <div className="text-sm font-semibold text-foreground leading-tight">
+                        {badge.label}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {badge.sublabel}
+                      </div>
                     </div>
+                  </motion.div>
+                );
+              })}
+              <motion.div
+                className="flex items-center gap-3"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                data-ocid="contact.trust.email"
+              >
+                <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">
+                    Email us at
                   </div>
-                </motion.div>
-              );
-            })}
-            <motion.div
-              className="flex items-center gap-3"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              data-ocid="contact.trust.email"
-            >
-              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                <Mail className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground">Email us at</div>
-                <a
-                  href={`mailto:${COMPANY_EMAIL}`}
-                  className="text-sm font-semibold text-foreground hover:text-primary transition-smooth"
-                  data-ocid="contact.direct_email.link"
-                >
-                  {COMPANY_EMAIL}
-                </a>
-              </div>
-            </motion.div>
+                  <a
+                    href={`mailto:${COMPANY_EMAIL}`}
+                    className="text-sm font-semibold text-foreground hover:text-primary transition-smooth"
+                    data-ocid="contact.direct_email.link"
+                  >
+                    {COMPANY_EMAIL}
+                  </a>
+                </div>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSectionReveal>
 
       {/* Form */}
-      <section
-        id="form"
-        className="py-20 bg-muted/20"
-        data-ocid="contact.form.section"
-      >
-        <div className="container mx-auto px-6 max-w-xl">
-          <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 text-sm text-muted-foreground mb-6">
-              <Clock className="w-4 h-4 text-primary" />
-              We respond within{" "}
-              <span className="text-foreground font-semibold">24 hours</span>
-            </div>
-            <h2 className="font-display text-3xl font-bold text-foreground mb-2">
-              Tell Us About Your Project
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              No jargon required. Just describe what you're trying to solve.
-            </p>
-          </motion.div>
-
-          {submitted ? (
+      <ScrollSectionReveal variant="pipeline">
+        <section
+          id="form"
+          className="py-20 bg-muted/20"
+          data-ocid="contact.form.section"
+        >
+          <div className="container mx-auto px-6 max-w-xl">
             <motion.div
-              className="bg-card border border-primary/30 rounded-2xl p-10 text-center"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-              data-ocid="contact.form.success_state"
-            >
-              <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-display text-2xl font-bold text-foreground mb-3">
-                Thank you!
-              </h3>
-              <p className="text-muted-foreground mb-2 leading-relaxed">
-                We'll review your project and reach out within{" "}
-                <span className="text-foreground font-medium">24 hours</span>.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                In the meantime, feel free to email{" "}
-                <a
-                  href={`mailto:${COMPANY_EMAIL}`}
-                  className="text-primary hover:underline"
-                >
-                  {COMPANY_EMAIL}
-                </a>
-              </p>
-            </motion.div>
-          ) : (
-            <motion.form
-              onSubmit={handleSubmit}
-              className="bg-card border border-border rounded-2xl p-8 md:p-10 space-y-6"
+              className="text-center mb-10"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              data-ocid="contact.form.panel"
-              noValidate
+              transition={{ duration: 0.5 }}
             >
-              {/* Name */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Name <span className="text-primary">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  placeholder="Your full name"
-                  value={form.name}
-                  onChange={(e) => setField("name", e.target.value)}
-                  className={`bg-background border-border ${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                  data-ocid="contact.form.name.input"
-                />
-                {errors.name && (
-                  <p
-                    className="text-xs text-destructive"
-                    data-ocid="contact.form.name.field_error"
-                  >
-                    {errors.name}
-                  </p>
-                )}
+              <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 text-sm text-muted-foreground mb-6">
+                <Clock className="w-4 h-4 text-primary" />
+                We respond within{" "}
+                <span className="text-foreground font-semibold">24 hours</span>
               </div>
+              <h2 className="font-display text-3xl font-bold text-foreground mb-2">
+                Tell Us About Your Project
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                No jargon required. Just describe what you're trying to solve.
+              </p>
+            </motion.div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Email <span className="text-primary">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  value={form.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  className={`bg-background border-border ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                  data-ocid="contact.form.email.input"
-                />
-                {errors.email && (
-                  <p
-                    className="text-xs text-destructive"
-                    data-ocid="contact.form.email.field_error"
+            {submitted ? (
+              <motion.div
+                className="bg-card border border-primary/30 rounded-2xl p-10 text-center"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                data-ocid="contact.form.success_state"
+              >
+                <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-foreground mb-3">
+                  Thank you!
+                </h3>
+                <p className="text-muted-foreground mb-2 leading-relaxed">
+                  We'll review your project and reach out within{" "}
+                  <span className="text-foreground font-medium">24 hours</span>.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  In the meantime, feel free to email{" "}
+                  <a
+                    href={`mailto:${COMPANY_EMAIL}`}
+                    className="text-primary hover:underline"
                   >
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* Service Interest */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="serviceInterest"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Service Interest
-                </Label>
-                <Select
-                  value={form.serviceInterest}
-                  onValueChange={(val) => setField("serviceInterest", val)}
-                >
-                  <SelectTrigger
-                    className="bg-background border-border w-full"
-                    data-ocid="contact.form.service_interest.select"
+                    {COMPANY_EMAIL}
+                  </a>
+                </p>
+              </motion.div>
+            ) : (
+              <motion.form
+                onSubmit={handleSubmit}
+                className="bg-card border border-border rounded-2xl p-8 md:p-10 space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                data-ocid="contact.form.panel"
+                noValidate
+              >
+                {/* Name */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-medium text-foreground"
                   >
-                    <SelectValue placeholder="Select a service…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {serviceOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Project Description */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="projectDescription"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Project Description <span className="text-primary">*</span>
-                </Label>
-                <Textarea
-                  id="projectDescription"
-                  placeholder="Tell us about your data challenge — what you're trying to track, collect, or analyze. The more detail, the better."
-                  value={form.projectDescription}
-                  onChange={(e) =>
-                    setField("projectDescription", e.target.value)
-                  }
-                  rows={5}
-                  className={`bg-background border-border resize-none ${errors.projectDescription ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                  data-ocid="contact.form.description.textarea"
-                />
-                <div className="flex items-start justify-between gap-2">
-                  {errors.projectDescription ? (
+                    Name <span className="text-primary">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="Your full name"
+                    value={form.name}
+                    onChange={(e) => setField("name", e.target.value)}
+                    className={`bg-background border-border ${errors.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                    data-ocid="contact.form.name.input"
+                  />
+                  {errors.name && (
                     <p
                       className="text-xs text-destructive"
-                      data-ocid="contact.form.description.field_error"
+                      data-ocid="contact.form.name.field_error"
                     >
-                      {errors.projectDescription}
+                      {errors.name}
                     </p>
-                  ) : (
-                    <span />
                   )}
-                  <span
-                    className={`text-xs ml-auto flex-shrink-0 ${form.projectDescription.length < 20 && form.projectDescription.length > 0 ? "text-destructive" : "text-muted-foreground"}`}
-                  >
-                    {form.projectDescription.length} / 20 min
-                  </span>
                 </div>
-              </div>
 
-              {/* Submit */}
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                disabled={submitting || isFetching}
-                data-ocid="contact.form.submit_button"
-              >
-                {submitting ? (
-                  <span
-                    className="flex items-center gap-2"
-                    data-ocid="contact.form.loading_state"
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-medium text-foreground"
                   >
-                    <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Sending…
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    Start Your Data Project <ArrowRight className="w-4 h-4" />
-                  </span>
-                )}
-              </Button>
+                    Email <span className="text-primary">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@company.com"
+                    value={form.email}
+                    onChange={(e) => setField("email", e.target.value)}
+                    className={`bg-background border-border ${errors.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                    data-ocid="contact.form.email.input"
+                  />
+                  {errors.email && (
+                    <p
+                      className="text-xs text-destructive"
+                      data-ocid="contact.form.email.field_error"
+                    >
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
 
-              <p className="text-xs text-center text-muted-foreground">
-                No spam. No hard sells. We'll reply with a clear plan and honest
-                assessment — within 24 hours, guaranteed.
-              </p>
-            </motion.form>
-          )}
-        </div>
-      </section>
+                {/* Service Interest */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="serviceInterest"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Service Interest
+                  </Label>
+                  <Select
+                    value={form.serviceInterest}
+                    onValueChange={(val) => setField("serviceInterest", val)}
+                  >
+                    <SelectTrigger
+                      className="bg-background border-border w-full"
+                      data-ocid="contact.form.service_interest.select"
+                    >
+                      <SelectValue placeholder="Select a service…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {serviceOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Project Description */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="projectDescription"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Project Description <span className="text-primary">*</span>
+                  </Label>
+                  <Textarea
+                    id="projectDescription"
+                    placeholder="Tell us about your data challenge — what you're trying to track, collect, or analyze. The more detail, the better."
+                    value={form.projectDescription}
+                    onChange={(e) =>
+                      setField("projectDescription", e.target.value)
+                    }
+                    rows={5}
+                    className={`bg-background border-border resize-none ${errors.projectDescription ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                    data-ocid="contact.form.description.textarea"
+                  />
+                  <div className="flex items-start justify-between gap-2">
+                    {errors.projectDescription ? (
+                      <p
+                        className="text-xs text-destructive"
+                        data-ocid="contact.form.description.field_error"
+                      >
+                        {errors.projectDescription}
+                      </p>
+                    ) : (
+                      <span />
+                    )}
+                    <span
+                      className={`text-xs ml-auto flex-shrink-0 ${form.projectDescription.length < 20 && form.projectDescription.length > 0 ? "text-destructive" : "text-muted-foreground"}`}
+                    >
+                      {form.projectDescription.length} / 20 min
+                    </span>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                  disabled={submitting || isFetching}
+                  data-ocid="contact.form.submit_button"
+                >
+                  {submitting ? (
+                    <span
+                      className="flex items-center gap-2"
+                      data-ocid="contact.form.loading_state"
+                    >
+                      <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      Sending…
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Start Your Data Project <ArrowRight className="w-4 h-4" />
+                    </span>
+                  )}
+                </Button>
+
+                <p className="text-xs text-center text-muted-foreground">
+                  No spam. No hard sells. We'll reply with a clear plan and
+                  honest assessment — within 24 hours, guaranteed.
+                </p>
+              </motion.form>
+            )}
+          </div>
+        </section>
+      </ScrollSectionReveal>
     </div>
   );
 }

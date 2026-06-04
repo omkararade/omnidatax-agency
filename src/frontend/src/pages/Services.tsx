@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
+import ScrollSectionReveal from "../components/ScrollSectionReveal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface ServiceCategory {
@@ -452,142 +453,148 @@ export function ServicesPage() {
       </section>
 
       {/* ── Service Cards ── */}
-      <section
-        className="bg-background py-24 px-4"
-        data-ocid="services.categories.section"
-      >
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-          >
-            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
-              Service Categories
-            </p>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              Three Layers of Data Mastery
-            </h2>
-          </motion.div>
+      <ScrollSectionReveal variant="pipeline">
+        <section
+          className="bg-background py-24 px-4"
+          data-ocid="services.categories.section"
+        >
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+            >
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
+                Service Categories
+              </p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                Three Layers of Data Mastery
+              </h2>
+            </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {SERVICE_CATEGORIES.map((svc, i) => (
-              <ServiceCard key={svc.id} svc={svc} index={i} />
-            ))}
+            <div className="grid md:grid-cols-3 gap-6">
+              {SERVICE_CATEGORIES.map((svc, i) => (
+                <ServiceCard key={svc.id} svc={svc} index={i} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSectionReveal>
 
       {/* ── Process ── */}
-      <section
-        className="bg-muted/30 border-y border-border py-24 px-4"
-        data-ocid="services.process.section"
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-          >
-            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
-              How It Works
-            </p>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              Our 4-Step Delivery Process
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-              From initial scoping call to deployed pipelines — a repeatable
-              process that delivers clean, trusted data on time.
-            </p>
-          </motion.div>
+      <ScrollSectionReveal variant="stream">
+        <section
+          className="bg-muted/30 border-y border-border py-24 px-4"
+          data-ocid="services.process.section"
+        >
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+            >
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
+                How It Works
+              </p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                Our 4-Step Delivery Process
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
+                From initial scoping call to deployed pipelines — a repeatable
+                process that delivers clean, trusted data on time.
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative">
-            {PROCESS_STEPS.map((step, i) => (
-              <ProcessStepCard key={step.step} step={step} index={i} />
-            ))}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative">
+              {PROCESS_STEPS.map((step, i) => (
+                <ProcessStepCard key={step.step} step={step} index={i} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSectionReveal>
 
       {/* ── Tech Stack ── */}
-      <section
-        className="bg-background py-24 px-4"
-        data-ocid="services.techstack.section"
-      >
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            className="text-center mb-12"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={0}
-          >
-            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
-              Technology Stack
-            </p>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              Battle-Tested Tools
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-              We use the industry-standard, production-proven stack — not
-              experiments.
-            </p>
-          </motion.div>
+      <ScrollSectionReveal variant="data-nodes">
+        <section
+          className="bg-background py-24 px-4"
+          data-ocid="services.techstack.section"
+        >
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              className="text-center mb-12"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+            >
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
+                Technology Stack
+              </p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
+                Battle-Tested Tools
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
+                We use the industry-standard, production-proven stack — not
+                experiments.
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {TECH_STACK.map((tech, i) => (
-              <motion.div
-                key={tech.name}
-                data-ocid={`services.tech.item.${i + 1}`}
-                className="flex flex-col items-center gap-3 p-5 rounded-xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-smooth cursor-default"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                custom={i}
-                whileHover={{ y: -2, transition: { duration: 0.15 } }}
-              >
-                <span className="text-3xl" role="img" aria-label={tech.name}>
-                  {tech.icon}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {TECH_STACK.map((tech, i) => (
+                <motion.div
+                  key={tech.name}
+                  data-ocid={`services.tech.item.${i + 1}`}
+                  className="flex flex-col items-center gap-3 p-5 rounded-xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-smooth cursor-default"
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  custom={i}
+                  whileHover={{ y: -2, transition: { duration: 0.15 } }}
+                >
+                  <span className="text-3xl" role="img" aria-label={tech.name}>
+                    {tech.icon}
+                  </span>
+                  <div className="text-center">
+                    <p className="font-display font-semibold text-sm text-foreground">
+                      {tech.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {tech.category}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="mt-10 flex flex-wrap justify-center gap-2"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={8}
+            >
+              {SECONDARY_TECH.map((t) => (
+                <span
+                  key={t}
+                  className="text-xs font-mono text-muted-foreground border border-border rounded-full px-3 py-1.5 bg-muted/50"
+                >
+                  {t}
                 </span>
-                <div className="text-center">
-                  <p className="font-display font-semibold text-sm text-foreground">
-                    {tech.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {tech.category}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+              ))}
+            </motion.div>
           </div>
-
-          <motion.div
-            className="mt-10 flex flex-wrap justify-center gap-2"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={8}
-          >
-            {SECONDARY_TECH.map((t) => (
-              <span
-                key={t}
-                className="text-xs font-mono text-muted-foreground border border-border rounded-full px-3 py-1.5 bg-muted/50"
-              >
-                {t}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+        </section>
+      </ScrollSectionReveal>
 
       {/* ── Why OmniDataX ── */}
       <section

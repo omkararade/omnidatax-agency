@@ -26,19 +26,19 @@ type ContactSubmission__93684224 =
     serviceInterest : ServiceInterest__35501641;
     submittedAt : Timestamp__306786231
   };
-type Data__791452850<K, V> =
-  {var count : Nat__490723111; kvs : [var ?(K, V)]};
-type Internal__8484328<K, V> =
-  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
-type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
-type Map__158565046<K, V> = Map__297112838<K, V>;
-type Map__297112838<K, V> =
-  {var root : Node__46230540<K, V>; var size : Nat__490723111};
-type Map__605269027<K, V> = Map__158565046<K, V>;
-type Nat__490723111 = Nat__920180692;
+type Data__80296667<K, V> =
+  {var count : Nat__1040412405; kvs : [var ?(K, V)]};
+type Internal__41346355<K, V> =
+  {children : [var ?Node__1000929467<K, V>]; data : Data__80296667<K, V>};
+type Leaf__712614010<K, V> = {data : Data__80296667<K, V>};
+type Map__222667396<K, V> = Map__912772452<K, V>;
+type Map__709709801<K, V> =
+  {var root : Node__1000929467<K, V>; var size : Nat__1040412405};
+type Map__912772452<K, V> = Map__709709801<K, V>;
+type Nat__1040412405 = Nat__920180692;
 type Nat__920180692 = Nat;
-type Node__46230540<K, V> =
-  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__1000929467<K, V> =
+  {#internal : Internal__41346355<K, V>; #leaf : Leaf__712614010<K, V>};
 type ServiceInterest__35501641 =
   {#aiAnalytics; #dataEngineering; #dataExtraction; #other};
 type Timestamp__306786231 = Int;
@@ -48,19 +48,19 @@ actor {
   stable accessControlState :
     {
       var adminAssigned : Bool;
-      userRoles : Map__605269027<Principal, UserRole__1073662873>
+      userRoles : Map__222667396<Principal, UserRole__1073662873>
     };
   stable caseStudies :
     {
-      var blockIndex : Nat__490723111;
+      var blockIndex : Nat__1040412405;
       var blocks : [var [var ?CaseStudy__364992108]];
-      var elementIndex : Nat__490723111
+      var elementIndex : Nat__1040412405
     };
   stable contactSubmissions :
     {
-      var blockIndex : Nat__490723111;
+      var blockIndex : Nat__1040412405;
       var blocks : [var [var ?ContactSubmission__93684224]];
-      var elementIndex : Nat__490723111
+      var elementIndex : Nat__1040412405
     };
   stable var nextCaseStudyId : Nat;
   stable nextCaseStudyIdRef : {var value : Nat}

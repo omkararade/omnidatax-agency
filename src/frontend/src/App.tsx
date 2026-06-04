@@ -12,6 +12,7 @@ import { Footer } from "./components/Footer";
 import { Nav } from "./components/Nav";
 import { PageTransition } from "./components/PageTransition";
 
+import ScrollDataFlow from "./components/ScrollDataFlow";
 import { AboutPage } from "./pages/About";
 import { AdminCaseStudiesPage } from "./pages/AdminCaseStudies";
 import { CaseStudiesPage } from "./pages/CaseStudies";
@@ -45,9 +46,10 @@ function PublicLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <ScrollDataFlow />
       <ScrollToTop />
       <Nav />
-      <main className="flex-1">
+      <main className="flex-1 scroll-content">
         <PageTransition routeKey={pathname}>
           <Outlet />
         </PageTransition>

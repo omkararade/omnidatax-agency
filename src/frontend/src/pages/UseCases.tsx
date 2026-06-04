@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
+import ScrollSectionReveal from "../components/ScrollSectionReveal";
 
 // ─── Use Case Data ──────────────────────────────────────────────────────────
 
@@ -331,62 +332,66 @@ export function UseCasesPage() {
       </section>
 
       {/* ── Use Case Cards ────────────────────────────────────────────────── */}
-      <section
-        data-ocid="use-cases.cards.section"
-        className="max-w-7xl mx-auto px-6 py-20 md:py-28"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.45 }}
-          className="mb-12 text-center"
+      <ScrollSectionReveal variant="stream">
+        <section
+          data-ocid="use-cases.cards.section"
+          className="max-w-7xl mx-auto px-6 py-20 md:py-28"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
-            Three Industries. One Platform.
-          </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Specialized pipelines built for the data challenges your industry
-            actually faces.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-          {USE_CASES_DETAIL.map((uc, i) => (
-            <UseCaseCard key={uc.id} useCase={uc} index={i} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── Industry Stats ─────────────────────────────────────────────────── */}
-      <section
-        data-ocid="use-cases.stats.section"
-        className="bg-muted/30 border-y border-border"
-      >
-        <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.45 }}
-            className="text-center mb-12"
+            className="mb-12 text-center"
           >
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
-              The Cost of Manual Data Work
+              Three Industries. One Platform.
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Industry research confirms what our clients already knew —
-              automation isn't optional, it's a competitive moat.
+              Specialized pipelines built for the data challenges your industry
+              actually faces.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {INDUSTRY_STATS.map((stat, i) => (
-              <StatCard key={stat.value} stat={stat} index={i} />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            {USE_CASES_DETAIL.map((uc, i) => (
+              <UseCaseCard key={uc.id} useCase={uc} index={i} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollSectionReveal>
+
+      {/* ── Industry Stats ─────────────────────────────────────────────────── */}
+      <ScrollSectionReveal variant="data-nodes">
+        <section
+          data-ocid="use-cases.stats.section"
+          className="bg-muted/30 border-y border-border"
+        >
+          <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45 }}
+              className="text-center mb-12"
+            >
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+                The Cost of Manual Data Work
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                Industry research confirms what our clients already knew —
+                automation isn't optional, it's a competitive moat.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {INDUSTRY_STATS.map((stat, i) => (
+                <StatCard key={stat.value} stat={stat} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      </ScrollSectionReveal>
 
       {/* ── Final CTA ──────────────────────────────────────────────────────── */}
       <section

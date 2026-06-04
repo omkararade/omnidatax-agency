@@ -18,6 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { motion } from "motion/react";
+import ScrollSectionReveal from "../components/ScrollSectionReveal";
 
 type IconComponent = React.ComponentType<{ className?: string }>;
 
@@ -74,7 +75,9 @@ export function HomePage() {
       <MetricsBannerSection />
       <ServicesSection />
       <UseCasesSection />
-      <TestimonialsSection />
+      <ScrollSectionReveal variant="data-nodes">
+        <TestimonialsSection />
+      </ScrollSectionReveal>
       <BlogSection />
       <CtaSection />
     </div>
@@ -258,236 +261,244 @@ function HeroSection() {
 
 function MetricsBannerSection() {
   return (
-    <section
-      className="bg-card border-y border-border py-20"
-      data-ocid="metrics.section"
-    >
-      <div className="container mx-auto px-6">
-        <motion.p
-          className="text-center text-xs font-mono tracking-widest text-muted-foreground mb-12 uppercase"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          Proven results across 60+ data projects
-        </motion.p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
-          {METRICS_DATA.map((m, i) => (
-            <motion.div
-              key={m.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              data-ocid={`metrics.item.${i + 1}`}
-            >
-              <AnimatedCounter
-                value={m.value}
-                suffix={m.suffix}
-                label={m.label}
-                description={m.description}
-                duration={1600}
-              />
-            </motion.div>
-          ))}
+    <ScrollSectionReveal variant="data-nodes">
+      <section
+        className="bg-card border-y border-border py-20"
+        data-ocid="metrics.section"
+      >
+        <div className="container mx-auto px-6">
+          <motion.p
+            className="text-center text-xs font-mono tracking-widest text-muted-foreground mb-12 uppercase"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            Proven results across 60+ data projects
+          </motion.p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">
+            {METRICS_DATA.map((m, i) => (
+              <motion.div
+                key={m.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                data-ocid={`metrics.item.${i + 1}`}
+              >
+                <AnimatedCounter
+                  value={m.value}
+                  suffix={m.suffix}
+                  label={m.label}
+                  description={m.description}
+                  duration={1600}
+                />
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ScrollSectionReveal>
   );
 }
 
 function ServicesSection() {
   return (
-    <section className="py-28 bg-background" data-ocid="services.section">
-      <div className="container mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <Badge
-            variant="outline"
-            className="border-primary/30 text-primary bg-primary/8 mb-4 text-xs font-mono tracking-wider"
+    <ScrollSectionReveal variant="pipeline">
+      <section className="py-28 bg-background" data-ocid="services.section">
+        <div className="container mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            WHAT WE BUILD
-          </Badge>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Three Core Services
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            From raw data collection to business-ready intelligence — we own the
-            full stack.
-          </p>
-        </motion.div>
+            <Badge
+              variant="outline"
+              className="border-primary/30 text-primary bg-primary/8 mb-4 text-xs font-mono tracking-wider"
+            >
+              WHAT WE BUILD
+            </Badge>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Three Core Services
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              From raw data collection to business-ready intelligence — we own
+              the full stack.
+            </p>
+          </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {SERVICES.map((service, i) => {
-            const Icon: IconComponent = serviceIcons[service.icon] ?? Database;
-            return (
-              <motion.div
-                key={service.id}
-                className="relative bg-card border border-border rounded-2xl p-8 hover:border-primary/30 hover:shadow-elevated transition-smooth group overflow-hidden"
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: i * 0.1 }}
-                data-ocid={`services.item.${i + 1}`}
-              >
-                <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full bg-primary/4 blur-3xl opacity-0 group-hover:opacity-100 transition-smooth pointer-events-none" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {SERVICES.map((service, i) => {
+              const Icon: IconComponent =
+                serviceIcons[service.icon] ?? Database;
+              return (
+                <motion.div
+                  key={service.id}
+                  className="relative bg-card border border-border rounded-2xl p-8 hover:border-primary/30 hover:shadow-elevated transition-smooth group overflow-hidden"
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, delay: i * 0.1 }}
+                  data-ocid={`services.item.${i + 1}`}
+                >
+                  <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full bg-primary/4 blur-3xl opacity-0 group-hover:opacity-100 transition-smooth pointer-events-none" />
 
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-smooth">
-                  <Icon className="w-6 h-6 text-primary" />
-                </div>
-
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                  {service.description}
-                </p>
-
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">
-                      Deliverables
-                    </p>
-                    <ul className="space-y-1.5">
-                      {service.deliverables.map((d) => (
-                        <li
-                          key={d}
-                          className="text-xs text-muted-foreground flex items-center gap-2"
-                        >
-                          <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-smooth">
+                    <Icon className="w-6 h-6 text-primary" />
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
-                      Outcomes
-                    </p>
-                    <ul className="space-y-1.5">
-                      {service.outcomes.map((o) => (
-                        <li
-                          key={o}
-                          className="text-xs text-muted-foreground flex items-center gap-2"
-                        >
-                          <CheckCircle2 className="w-3 h-3 text-primary shrink-0" />
-                          {o}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
 
-        <div className="text-center mt-10">
-          <Button
-            asChild
-            variant="outline"
-            className="border-border hover:border-primary/40 hover:bg-primary/5"
-            data-ocid="services.view_all.button"
-          >
-            <Link to="/services">
-              View All Services <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
+                  <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                    {service.description}
+                  </p>
+
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold text-foreground uppercase tracking-wider mb-2">
+                        Deliverables
+                      </p>
+                      <ul className="space-y-1.5">
+                        {service.deliverables.map((d) => (
+                          <li
+                            key={d}
+                            className="text-xs text-muted-foreground flex items-center gap-2"
+                          >
+                            <span className="w-1 h-1 rounded-full bg-primary shrink-0" />
+                            {d}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
+                        Outcomes
+                      </p>
+                      <ul className="space-y-1.5">
+                        {service.outcomes.map((o) => (
+                          <li
+                            key={o}
+                            className="text-xs text-muted-foreground flex items-center gap-2"
+                          >
+                            <CheckCircle2 className="w-3 h-3 text-primary shrink-0" />
+                            {o}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="text-center mt-10">
+            <Button
+              asChild
+              variant="outline"
+              className="border-border hover:border-primary/40 hover:bg-primary/5"
+              data-ocid="services.view_all.button"
+            >
+              <Link to="/services">
+                View All Services <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ScrollSectionReveal>
   );
 }
 
 function UseCasesSection() {
   return (
-    <section
-      className="py-28 bg-muted/20 border-y border-border"
-      data-ocid="use_cases.section"
-    >
-      <div className="container mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <Badge
-            variant="outline"
-            className="border-primary/30 text-primary bg-primary/8 mb-4 text-xs font-mono tracking-wider"
+    <ScrollSectionReveal variant="stream">
+      <section
+        className="py-28 bg-muted/20 border-y border-border"
+        data-ocid="use_cases.section"
+      >
+        <div className="container mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            USE CASES
-          </Badge>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Built for Your Industry
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Real applications across the verticals that rely on data to compete.
-          </p>
-        </motion.div>
+            <Badge
+              variant="outline"
+              className="border-primary/30 text-primary bg-primary/8 mb-4 text-xs font-mono tracking-wider"
+            >
+              USE CASES
+            </Badge>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Built for Your Industry
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Real applications across the verticals that rely on data to
+              compete.
+            </p>
+          </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {USE_CASES.map((uc, i) => {
-            const Icon: IconComponent = useCaseIcons[uc.icon] ?? BarChart2;
-            return (
-              <motion.div
-                key={uc.id}
-                className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 hover:shadow-elevated transition-smooth group"
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                data-ocid={`use_cases.item.${i + 1}`}
-              >
-                <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-smooth">
-                  <Icon className="w-5 h-5 text-primary" />
-                </div>
-                <Badge className="mb-3 bg-primary/10 text-primary border-0 text-xs">
-                  {uc.industry}
-                </Badge>
-                <h3 className="font-display text-base font-bold text-foreground mb-2">
-                  {uc.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  {uc.description}
-                </p>
-                <ul className="space-y-1.5">
-                  {uc.metrics.map((m) => (
-                    <li
-                      key={m}
-                      className="text-xs text-muted-foreground flex items-center gap-2"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0" />
-                      {m}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            );
-          })}
-        </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {USE_CASES.map((uc, i) => {
+              const Icon: IconComponent = useCaseIcons[uc.icon] ?? BarChart2;
+              return (
+                <motion.div
+                  key={uc.id}
+                  className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 hover:shadow-elevated transition-smooth group"
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  data-ocid={`use_cases.item.${i + 1}`}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-smooth">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <Badge className="mb-3 bg-primary/10 text-primary border-0 text-xs">
+                    {uc.industry}
+                  </Badge>
+                  <h3 className="font-display text-base font-bold text-foreground mb-2">
+                    {uc.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    {uc.description}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {uc.metrics.map((m) => (
+                      <li
+                        key={m}
+                        className="text-xs text-muted-foreground flex items-center gap-2"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0" />
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
+          </div>
 
-        <div className="text-center mt-10">
-          <Button
-            asChild
-            variant="outline"
-            className="border-border hover:border-primary/40 hover:bg-primary/5"
-            data-ocid="use_cases.view_all.button"
-          >
-            <Link to="/use-cases">
-              Explore All Use Cases <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
+          <div className="text-center mt-10">
+            <Button
+              asChild
+              variant="outline"
+              className="border-border hover:border-primary/40 hover:bg-primary/5"
+              data-ocid="use_cases.view_all.button"
+            >
+              <Link to="/use-cases">
+                Explore All Use Cases <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ScrollSectionReveal>
   );
 }
 
@@ -564,59 +575,64 @@ function BlogSection() {
 
 function CtaSection() {
   return (
-    <section className="py-28 relative overflow-hidden" data-ocid="cta.section">
-      {/* Red gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background" />
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/8 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+    <ScrollSectionReveal variant="pipeline">
+      <section
+        className="py-28 relative overflow-hidden"
+        data-ocid="cta.section"
+      >
+        {/* Red gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/8 to-transparent pointer-events-none" />
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <Badge
-            variant="outline"
-            className="border-primary/40 text-primary bg-primary/10 mb-6 text-xs font-mono tracking-wider"
+        <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            GET STARTED TODAY
-          </Badge>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-            Ready to Automate Your
-            <br />
-            <span className="text-primary">Data Workflow?</span>
-          </h2>
-          <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-            Get a free sample dataset from your target market or book a
-            30-minute strategy call. No pressure, no long pitches — just data.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base px-10 shadow-elevated group"
-              data-ocid="cta.start_project.primary_button"
-            >
-              <Link to="/contact">
-                Start Your Project{" "}
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
+            <Badge
               variant="outline"
-              className="border-border hover:border-primary/40 text-foreground font-semibold text-base px-10"
-              data-ocid="cta.book_call.secondary_button"
+              className="border-primary/40 text-primary bg-primary/10 mb-6 text-xs font-mono tracking-wider"
             >
-              <Link to="/contact">Book a Call</Link>
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    </section>
+              GET STARTED TODAY
+            </Badge>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+              Ready to Automate Your
+              <br />
+              <span className="text-primary">Data Workflow?</span>
+            </h2>
+            <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
+              Get a free sample dataset from your target market or book a
+              30-minute strategy call. No pressure, no long pitches — just data.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button
+                asChild
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base px-10 shadow-elevated group"
+                data-ocid="cta.start_project.primary_button"
+              >
+                <Link to="/contact">
+                  Start Your Project{" "}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-border hover:border-primary/40 text-foreground font-semibold text-base px-10"
+                data-ocid="cta.book_call.secondary_button"
+              >
+                <Link to="/contact">Book a Call</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </ScrollSectionReveal>
   );
 }

@@ -162,3 +162,46 @@
     );
   }
 }
+
+/* ── Scroll data-flow canvas layer ─────────────────────────────────── */
+.data-flow-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All page content sits above the fixed canvas */
+.scroll-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Red pulse dot for data-nodes reveal variant */
+.data-pulse-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: oklch(0.72 0.18 30);
+  box-shadow: 0 0 6px oklch(0.72 0.18 30 / 0.8);
+  animation: data-pulse 0.9s ease-out forwards;
+}
+
+@keyframes data-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(2.4);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
