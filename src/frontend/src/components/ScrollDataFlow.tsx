@@ -3,21 +3,46 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const STREAM_COUNT = 5;
-const PARTICLES_PER_STREAM = 12;
+// 13 columns spread across the full viewport width
+const STREAM_COUNT = 13;
+const PARTICLES_PER_STREAM = 15;
+// Milliseconds of inactivity before animation freezes
+const IDLE_TIMEOUT_MS = 150;
+// Scroll px needed to unlock each successive column after the first
+const SCROLL_PER_COLUMN = 250;
+
+/**
+ * Shared scroll state passed down to Three.js streams.
+ * - delta: pixels scrolled since last frame (drives speed)
+ * - isScrolling: true only while user is actively scrolling
+ * - totalScrolled: cumulative downward scroll distance (drives column reveal)
+ */
+interface ScrollState {
+  delta: number;
+  isScrolling: boolean;
+  lastScrollY: number;
+  totalScrolled: number;
+  visibleCount: number;
+}
 
 interface StreamProps {
   xPos: number;
   phaseOffset: number;
-  scrollRef: React.MutableRefObject<number>;
+  scrollStateRef: React.MutableRefObject<ScrollState>;
   streamIndex: number;
+  // each stream tracks its own accumulated y-offset so it freezes cleanly
+  accRef: React.MutableRefObject<number[]>;
+  // per-stream fade-in progress ref: 0 = fully hidden, 1 = fully visible
+  fadeRef: React.MutableRefObject<number[]>;
 }
 
 function DataStream({
   xPos,
   phaseOffset,
-  scrollRef,
+  scrollStateRef,
   streamIndex,
+  accRef,
+  fadeRef,
 }: StreamProps) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -25,58 +50,69 @@ function DataStream({
   const glyphData = useMemo(
     () =>
       Array.from({ length: PARTICLES_PER_STREAM }, (_, i) => ({
-        offset: i / PARTICLES_PER_STREAM,
+        // stagger initial positions evenly so columns look full on first scroll
+        initialOffset: i / PARTICLES_PER_STREAM + ((streamIndex * 0.17) % 1),
         char: ((streamIndex * 31 + i * 7) % 3 === 0 ? "0" : "1") as "0" | "1",
         isRed: (i + streamIndex) % 3 !== 0,
       })),
     [streamIndex],
   );
 
-  // Refs to Text mesh objects so we can mutate them in useFrame
   const textRefs = useRef<(THREE.Object3D | null)[]>([]);
 
-  // Subtle horizontal sway per stream so they feel organic
-  const swayFreq = 0.3 + streamIndex * 0.07;
-  const swayAmp = 0.02 + streamIndex * 0.005;
+  useFrame((_, dt) => {
+    const { delta, isScrolling, visibleCount } = scrollStateRef.current;
 
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    const scroll = scrollRef.current;
+    // --- Fade-in logic: smoothly interpolate toward target opacity scale ---
+    const targetFade = streamIndex < visibleCount ? 1 : 0;
+    const currentFade = fadeRef.current[streamIndex] ?? 0;
+    // ~0.3s fade: lerp speed ~3.5 per second
+    const newFade =
+      currentFade + (targetFade - currentFade) * Math.min(1, dt * 3.5);
+    fadeRef.current[streamIndex] = newFade;
 
-    // Base speed increases with scroll
-    const speed = 0.18 + scroll * 0.38;
-    // Opacity ramps up as streams reveal with scroll
-    const streamReveal = Math.max(0, scroll * STREAM_COUNT - streamIndex);
-    const revealFactor = Math.min(streamReveal, 1);
+    // If still fully transparent, skip all updates
+    if (newFade < 0.005) return;
 
-    // Sway the whole stream slightly
-    const sway = Math.sin(t * swayFreq + phaseOffset) * swayAmp;
-    if (groupRef.current) {
-      groupRef.current.position.x = xPos + sway;
+    // Only advance positions when actively scrolling
+    if (isScrolling && delta > 0) {
+      // Convert pixel delta to normalised scene units
+      // ~600px of scroll = full column height (2 units)
+      const advance = (delta / 600) * 2;
+      accRef.current[streamIndex] =
+        (accRef.current[streamIndex] ?? 0) + advance;
     }
 
-    // Update each glyph position and opacity
+    const acc = accRef.current[streamIndex] ?? 0;
+
+    if (groupRef.current) {
+      groupRef.current.position.x = xPos;
+    }
+
     textRefs.current.forEach((obj, i) => {
       if (!obj) return;
-      const { offset } = glyphData[i];
-      // travel from y=1 (top) to y=-1 (bottom), looping
-      const y = 1 - ((t * speed + offset + phaseOffset * 0.5) % 1) * 2;
+      const { initialOffset } = glyphData[i];
+      // Each glyph starts at a staggered position and wraps in [−1, 1]
+      const raw =
+        initialOffset + acc * (0.9 + (i % 3) * 0.05) + phaseOffset * 0.08;
+      const normalised = raw % 1; // 0..1
+      // Map to y: starts at top (+1) flows to bottom (−1)
+      const y = 1 - normalised * 2;
       obj.position.y = y;
 
-      // Pulse brightness based on y position — brighter near center
+      // Pulse brightness based on y position — brighter near centre
       const brightness = 1 - Math.abs(y) * 0.5;
-      const baseOpacity = 0.55 + brightness * 0.45;
+      const baseOpacity = isScrolling
+        ? 0.18 + brightness * 0.12
+        : 0.08 + brightness * 0.07; // dimmer when frozen
       // @ts-expect-error: Text mesh material may not be typed exactly
       const mat = obj.material as THREE.MeshBasicMaterial | undefined;
-      if (mat) {
-        mat.opacity = baseOpacity * revealFactor;
-      }
+      if (mat) mat.opacity = baseOpacity * newFade;
     });
   });
 
   return (
     <group ref={groupRef}>
-      {/* Binary glyph rain — stable fixed-count array, index keys are safe */}
       {glyphData.map(({ char, isRed }, i) => (
         <Text
           // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length static array, positions never reorder
@@ -85,13 +121,13 @@ function DataStream({
             textRefs.current[i] = el;
           }}
           position={[0, 0, 0]}
-          fontSize={0.07}
+          fontSize={0.052}
           color={isRed ? "#e63030" : "#e0e0e0"}
           anchorX="center"
           anchorY="middle"
           depthOffset={1}
           material-transparent={true}
-          material-opacity={0.7}
+          material-opacity={0.5}
           material-blending={THREE.AdditiveBlending}
           material-depthWrite={false}
         >
@@ -103,15 +139,17 @@ function DataStream({
 }
 
 interface SceneProps {
-  scrollRef: React.MutableRefObject<number>;
+  scrollStateRef: React.MutableRefObject<ScrollState>;
+  accRef: React.MutableRefObject<number[]>;
+  fadeRef: React.MutableRefObject<number[]>;
 }
 
-function FlowScene({ scrollRef }: SceneProps) {
-  // Evenly space streams across x: -0.8 to 0.8
+function FlowScene({ scrollStateRef, accRef, fadeRef }: SceneProps) {
+  // Spread 13 streams from x = −1.1 to +1.1 (wider than before to fill viewport)
   const streams = useMemo(
     () =>
       Array.from({ length: STREAM_COUNT }, (_, i) => ({
-        xPos: -0.8 + (i / (STREAM_COUNT - 1)) * 1.6,
+        xPos: -1.1 + (i / (STREAM_COUNT - 1)) * 2.2,
         phaseOffset: (i / STREAM_COUNT) * Math.PI * 2,
         index: i,
       })),
@@ -125,8 +163,10 @@ function FlowScene({ scrollRef }: SceneProps) {
           key={s.index}
           xPos={s.xPos}
           phaseOffset={s.phaseOffset}
-          scrollRef={scrollRef}
+          scrollStateRef={scrollStateRef}
           streamIndex={s.index}
+          accRef={accRef}
+          fadeRef={fadeRef}
         />
       ))}
     </>
@@ -134,15 +174,71 @@ function FlowScene({ scrollRef }: SceneProps) {
 }
 
 export default function ScrollDataFlow() {
-  const scrollRef = useRef(0);
+  const scrollStateRef = useRef<ScrollState>({
+    delta: 0,
+    isScrolling: false,
+    lastScrollY: typeof window !== "undefined" ? window.scrollY : 0,
+    totalScrolled: 0,
+    // Column 1 (index 0) is always visible from the start
+    visibleCount: 1,
+  });
+
+  // Per-stream accumulated y-offsets — lives here so it survives re-renders
+  const accRef = useRef<number[]>(
+    Array.from({ length: STREAM_COUNT }, () => 0),
+  );
+
+  // Per-stream fade-in progress (0→1) — drives smooth opacity reveal
+  const fadeRef = useRef<number[]>(
+    // Column 0 starts fully visible; the rest start hidden
+    Array.from({ length: STREAM_COUNT }, (_, i) => (i === 0 ? 1 : 0)),
+  );
 
   useEffect(() => {
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
     const onScroll = () => {
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      scrollRef.current = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const currentY = window.scrollY;
+      const rawDelta = currentY - scrollStateRef.current.lastScrollY;
+      const absDelta = Math.abs(rawDelta);
+
+      // Accumulate only downward scroll for the reveal counter
+      const prevTotal = scrollStateRef.current.totalScrolled;
+      const newTotal = rawDelta > 0 ? prevTotal + rawDelta : prevTotal;
+
+      // Each column after the first unlocks after SCROLL_PER_COLUMN more px
+      // Column 0: always visible (threshold = 0)
+      // Column 1: threshold = SCROLL_PER_COLUMN
+      // Column n: threshold = n * SCROLL_PER_COLUMN
+      const newVisibleCount = Math.min(
+        STREAM_COUNT,
+        1 + Math.floor(newTotal / SCROLL_PER_COLUMN),
+      );
+
+      scrollStateRef.current = {
+        delta: absDelta,
+        isScrolling: true,
+        lastScrollY: currentY,
+        totalScrolled: newTotal,
+        visibleCount: newVisibleCount,
+      };
+
+      // Reset idle timer on every scroll event
+      if (idleTimer !== null) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        scrollStateRef.current = {
+          ...scrollStateRef.current,
+          delta: 0,
+          isScrolling: false,
+        };
+      }, IDLE_TIMEOUT_MS);
     };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (idleTimer !== null) clearTimeout(idleTimer);
+    };
   }, []);
 
   return (
@@ -152,7 +248,7 @@ export default function ScrollDataFlow() {
       data-ocid="scroll_data_flow.canvas_target"
     >
       <Canvas
-        camera={{ position: [0, 0, 1.5], fov: 70 }}
+        camera={{ position: [0, 0, 1.5], fov: 75 }}
         dpr={[1, 1.2]}
         style={{ width: "100%", height: "100%" }}
         gl={{
@@ -161,7 +257,11 @@ export default function ScrollDataFlow() {
           powerPreference: "low-power",
         }}
       >
-        <FlowScene scrollRef={scrollRef} />
+        <FlowScene
+          scrollStateRef={scrollStateRef}
+          accRef={accRef}
+          fadeRef={fadeRef}
+        />
       </Canvas>
     </div>
   );

@@ -106,6 +106,24 @@ export const SERVICES: Service[] = [
       "24/7 agent runtime, zero manual work",
     ],
   },
+  {
+    id: "web-dev",
+    title: "Full Stack Web Development",
+    description:
+      "Custom web apps, SaaS platforms, and data-driven dashboards built with modern frameworks — shipped fast, architected to scale.",
+    icon: "Code2",
+    deliverables: [
+      "Custom web applications",
+      "REST & GraphQL API integrations",
+      "Data dashboards & internal tools",
+      "SaaS platform foundations",
+    ],
+    outcomes: [
+      "60% faster go-to-market",
+      "Scalable, maintainable architecture",
+      "Modern UX that converts",
+    ],
+  },
 ];
 
 export const USE_CASES: UseCase[] = [

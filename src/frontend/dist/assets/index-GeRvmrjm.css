@@ -2639,6 +2639,9 @@ video {
   --tw-enter-translate-x: initial;
   --tw-enter-translate-y: initial;
 }
+.fade-in {
+  --tw-enter-opacity: 0;
+}
 .fade-in-0 {
   --tw-enter-opacity: 0;
 }
