@@ -1,9 +1,8 @@
-import { type CaseStudy, createActor } from "@/backend";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useActor } from "@caffeineai/core-infrastructure";
+import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
@@ -20,6 +19,23 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import ScrollSectionReveal from "../components/ScrollSectionReveal";
+
+type CaseStudy = {
+  id: string;
+  title: string;
+  clientType: string;
+  industry: string;
+  keyMetric: string;
+  keyMetricLabel: string;
+  problem: string;
+  approach: string;
+  tools: string[];
+  results: {
+    metric: string;
+    description: string;
+  }[];
+  iconName: string;
+};
 
 const iconMap: Record<string, LucideIcon> = {
   trending: TrendingUp,
@@ -63,15 +79,19 @@ function CaseStudyCard({
 
         <div className="p-6">
           {/* Header: badges + metric */}
-          <div className="flex items-start justify-between gap-4 mb-4">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
+            {/* Left Side */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-2">
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2 mb-3">
                 <Badge
                   variant="secondary"
                   className="text-xs font-mono bg-muted text-muted-foreground border-0"
                 >
                   {study.industry}
                 </Badge>
+
                 <Badge
                   variant="outline"
                   className="text-xs border-border/60 text-muted-foreground"
@@ -79,26 +99,110 @@ function CaseStudyCard({
                   {study.clientType}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                  <Icon className="w-3.5 h-3.5 text-primary" />
+
+              {/* Icon + Title */}
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-1">
+                  <Icon className="w-4 h-4 text-primary" />
                 </div>
-                <h3 className="text-base font-display font-semibold text-foreground leading-snug">
+
+                <h3
+                  className="
+                    text-xl
+                    font-display
+                    font-semibold
+                    text-foreground
+                    leading-tight
+                    break-words
+                    min-w-0
+                  "
+                >
                   {study.title}
                 </h3>
               </div>
             </div>
 
-            {/* Key metric */}
-            <div className="shrink-0 text-right bg-primary/5 border border-primary/20 rounded-xl px-4 py-2.5">
-              <div className="text-2xl font-display font-bold text-primary leading-none">
+            {/* Right Side Metric Card */}
+            <div
+              className="
+                w-full
+                sm:w-auto
+                sm:min-w-[110px]
+                sm:max-w-[180px]
+                text-center
+                rounded-2xl
+                border
+                border-primary/20
+                bg-primary/5
+                px-4
+                py-3
+                backdrop-blur-sm
+              "
+            >
+              <div className="text-3xl font-display font-bold text-primary leading-none">
                 {study.keyMetric}
               </div>
-              <div className="text-[10px] text-muted-foreground mt-0.5 whitespace-nowrap">
+
+              <div
+                className="
+                  text-xs
+                  text-muted-foreground
+                  mt-2
+                  leading-tight
+                  break-words
+                "
+              >
                 {study.keyMetricLabel}
               </div>
             </div>
           </div>
+
+          {/* Problem teaser */}
+          <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">
+            {study.problem}
+          </p>
+
+          {/* Tools Preview */}
+          {!expanded && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {study.tools.slice(0, 3).map((tool) => (
+                <span
+                  key={tool}
+                  className="
+                    text-[11px]
+                    px-2.5
+                    py-1
+                    rounded-full
+                    bg-muted
+                    text-muted-foreground
+                    font-mono
+                    border
+                    border-border
+                  "
+                >
+                  {tool}
+                </span>
+              ))}
+
+              {study.tools.length > 3 && (
+                <span
+                  className="
+                    text-[11px]
+                    px-2.5
+                    py-1
+                    rounded-full
+                    bg-muted
+                    text-muted-foreground
+                    font-mono
+                    border
+                    border-border
+                  "
+                >
+                  +{study.tools.length - 3} more
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Problem teaser */}
           <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
@@ -205,7 +309,7 @@ function CaseStudyCard({
                     <span className="w-1 h-3 rounded-full bg-primary inline-block" />
                     Results
                   </h4>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {study.results.map((result, ri) => (
                       <div
                         key={`${result.metric}-${ri}`}
@@ -260,15 +364,38 @@ function CaseStudySkeletonCard() {
 }
 
 export function CaseStudiesPage() {
-  const { actor, isFetching } = useActor(createActor);
-
-  const { data: studies = [], isLoading } = useQuery<CaseStudy[]>({
+  const { data: studies = [], isLoading } = useQuery({
     queryKey: ["caseStudies"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getAllCaseStudies();
+    queryFn: async (): Promise<CaseStudy[]> => {
+      const { data, error } = await supabase
+        .from("case_studie")
+        .select("*")
+        .order("created_at", { ascending: false });
+  
+      if (error) {
+        throw error;
+      }
+  
+      return (data || []).map((item: any) => ({
+        id: item.id?.toString() || "",
+        title: item.title || "",
+        clientType: item.client_type || "",
+        industry: item.industry || "",
+        keyMetric: item.key_metric || "",
+        keyMetricLabel: item.key_metric_label || "",
+        problem: item.problem || "",
+        approach: item.approach || "",
+        tools:
+          typeof item.tools === "string"
+            ? JSON.parse(item.tools)
+            : item.tools || [],
+        results:
+          typeof item.results === "string"
+            ? JSON.parse(item.results)
+            : item.results || [],
+        iconName: item.icon_name || "bar",
+      }));
     },
-    enabled: !!actor && !isFetching,
   });
 
   const studyCount = isLoading ? "—" : studies.length.toString();
@@ -347,7 +474,7 @@ export function CaseStudiesPage() {
         >
           {isLoading ? (
             <div
-              className="grid grid-cols-1 md:grid-cols-2 gap-5"
+              className="grid grid-cols-1 xl:grid-cols-2 gap-6"
               data-ocid="case_studies.loading_state"
             >
               {[1, 2, 3, 4].map((n) => (
@@ -368,7 +495,7 @@ export function CaseStudiesPage() {
                   <BarChart2 className="w-7 h-7 text-primary/60" />
                 </div>
               </div>
-              <h3 className="text-xl font-display font-semibold text-foreground">
+              <h3 className="text-lg sm:text-xl font-display font-semibold leading-tight break-words w-full">
                 Case studies coming soon
               </h3>
               <p className="text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">

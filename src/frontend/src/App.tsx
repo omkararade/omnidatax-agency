@@ -20,6 +20,7 @@ import { ContactPage } from "./pages/Contact";
 import { HomePage } from "./pages/Home";
 import { ServicesPage } from "./pages/Services";
 import { UseCasesPage } from "./pages/UseCases";
+import { AdminLoginPage } from "./pages/AdminLogin";
 
 function ScrollToTop() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -111,6 +112,12 @@ const contactRoute = createRoute({
   component: ContactPage,
 });
 
+const adminLoginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin-login",
+  component: AdminLoginPage,
+});
+
 // "_admin" layout route — path-less, renders minimal wrapper (no Nav/Footer)
 const adminLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -126,6 +133,8 @@ const adminCaseStudiesRoute = createRoute({
 
 // Single unified route tree
 const routeTree = rootRoute.addChildren([
+  adminLoginRoute,
+
   publicLayoutRoute.addChildren([
     indexRoute,
     servicesRoute,
@@ -134,7 +143,10 @@ const routeTree = rootRoute.addChildren([
     aboutRoute,
     contactRoute,
   ]),
-  adminLayoutRoute.addChildren([adminCaseStudiesRoute]),
+
+  adminLayoutRoute.addChildren([
+    adminCaseStudiesRoute,
+  ]),
 ]);
 
 const router = createRouter({ routeTree });

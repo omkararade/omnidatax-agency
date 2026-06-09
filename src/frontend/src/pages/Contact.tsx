@@ -1,8 +1,5 @@
-import {
-  ServiceInterest,
-  type SubmitContactInput,
-  createActor,
-} from "@/backend";
+
+import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +31,7 @@ import ScrollSectionReveal from "../components/ScrollSectionReveal";
 interface FormState {
   name: string;
   email: string;
-  serviceInterest: ServiceInterest | "";
+  serviceInterest: string;
   projectDescription: string;
 }
 
@@ -45,11 +42,11 @@ interface FormErrors {
   projectDescription?: string;
 }
 
-const serviceOptions: { value: ServiceInterest; label: string }[] = [
-  { value: ServiceInterest.dataExtraction, label: "Data Extraction" },
-  { value: ServiceInterest.dataEngineering, label: "Data Engineering" },
-  { value: ServiceInterest.aiAnalytics, label: "AI & Analytics" },
-  { value: ServiceInterest.other, label: "Not Sure Yet" },
+const serviceOptions = [
+  { value: "Data Extraction", label: "Data Extraction" },
+  { value: "Data Engineering", label: "Data Engineering" },
+  { value: "AI & Analytics", label: "AI & Analytics" },
+  { value: "Other", label: "Not Sure Yet" },
 ];
 
 const trustBadges = [
@@ -59,7 +56,6 @@ const trustBadges = [
 ];
 
 export function ContactPage() {
-  const { actor, isFetching } = useActor(createActor);
 
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -91,41 +87,46 @@ export function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     if (!validate()) return;
-    if (!actor || isFetching) {
-      toast.error("Connection not ready", {
-        description: "Please wait a moment and try again.",
-      });
-      return;
-    }
-
+  
     setSubmitting(true);
+  
     try {
-      const input: SubmitContactInput = {
-        name: form.name.trim(),
-        email: form.email.trim(),
-        projectDescription: form.projectDescription.trim(),
-        serviceInterest:
-          form.serviceInterest !== ""
-            ? form.serviceInterest
-            : ServiceInterest.other,
-      };
-      const result = await actor.submitContactForm(input);
-      if (result.__kind__ === "ok") {
-        setSubmitted(true);
-        toast.success("Message sent!", {
-          description:
-            "We'll review your project and reach out within 24 hours.",
-        });
-      } else {
-        toast.error("Submission failed", {
-          description:
-            result.err || "An unexpected error occurred. Please try again.",
-        });
+      const { error } = await supabase
+        .from("leads")
+        .insert([
+          {
+            name: form.name.trim(),
+            email: form.email.trim(),
+            service_interest: form.serviceInterest || "Other",
+            project_description: form.projectDescription.trim(),
+          },
+        ]);
+  
+      if (error) {
+        throw error;
       }
-    } catch (_err) {
-      toast.error("Network error", {
-        description: "Failed to submit your request. Please try again shortly.",
+  
+      setSubmitted(true);
+  
+      setForm({
+        name: "",
+        email: "",
+        serviceInterest: "",
+        projectDescription: "",
+      });
+  
+      toast.success("Message sent!", {
+        description:
+          "We'll review your project and reach out within 24 hours.",
+      });
+    } catch (err) {
+      console.error(err);
+  
+      toast.error("Submission failed", {
+        description:
+          "Failed to save your request. Please try again.",
       });
     } finally {
       setSubmitting(false);
@@ -425,7 +426,7 @@ export function ContactPage() {
                   type="submit"
                   size="lg"
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                  disabled={submitting || isFetching}
+                  disabled={submitting}
                   data-ocid="contact.form.submit_button"
                 >
                   {submitting ? (

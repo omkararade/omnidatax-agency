@@ -1,12 +1,4 @@
-import {
-  type CaseStudy,
-  type CaseStudyResult,
-  type ContactSubmission,
-  type CreateCaseStudyInput,
-  ServiceInterest,
-  type UpdateCaseStudyInput,
-  createActor,
-} from "@/backend";
+import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +20,6 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { useActor, useInternetIdentity } from "@caffeineai/core-infrastructure";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
@@ -44,7 +35,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { toast } from "sonner";
 
@@ -52,6 +43,36 @@ import { toast } from "sonner";
 
 type AdminTab = "case-studies" | "leads";
 type IconName = "trending" | "zap" | "bar" | "cart";
+
+interface CaseStudyResult {
+  metric: string;
+  description: string;
+}
+
+interface CaseStudy {
+  id: string;
+  title: string;
+  client_type: string;
+  industry: string;
+  key_metric: string;
+  key_metric_label: string;
+  icon_name: string;
+  problem: string;
+  approach: string;
+  tools: string[];
+  results: CaseStudyResult[];
+  created_at: string;
+  updated_at: string;
+}
+
+interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  service_interest: string;
+  project_description: string;
+  created_at: string;
+}
 
 interface FormState {
   title: string;
@@ -90,11 +111,11 @@ const ICON_OPTIONS: { value: IconName; label: string; Icon: LucideIcon }[] = [
   { value: "cart", label: "Shopping Cart", Icon: ShoppingCart },
 ];
 
-const SERVICE_LABELS: Record<ServiceInterest, string> = {
-  [ServiceInterest.dataExtraction]: "Data Extraction",
-  [ServiceInterest.dataEngineering]: "Data Engineering",
-  [ServiceInterest.aiAnalytics]: "AI Automations & Agents",
-  [ServiceInterest.other]: "Other",
+const SERVICE_LABELS: Record<string, string> = {
+  data_extraction: "Data Extraction",
+  data_engineering: "Data Engineering",
+  ai_analytics: "AI Automations & Agents",
+  other: "Other",
 };
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -109,11 +130,11 @@ function parseTools(raw: string): string[] {
 function studyToForm(s: CaseStudy): FormState {
   return {
     title: s.title,
-    clientType: s.clientType,
+    clientType: s.client_type,
     industry: s.industry,
-    keyMetric: s.keyMetric,
-    keyMetricLabel: s.keyMetricLabel,
-    iconName: (s.iconName as IconName) || "trending",
+    keyMetric: s.key_metric,
+    keyMetricLabel: s.key_metric_label,
+    iconName: (s.icon_name as IconName) || "trending",
     problem: s.problem,
     approach: s.approach,
     tools: s.tools.join(", "),
@@ -121,10 +142,8 @@ function studyToForm(s: CaseStudy): FormState {
   };
 }
 
-function formatTimestamp(ts: bigint): string {
-  // Backend timestamps are in nanoseconds
-  const ms = Number(ts / BigInt(1_000_000));
-  const date = new Date(ms);
+function formatTimestamp(ts: string): string {
+  const date = new Date(ts);
   return date.toLocaleString("en-US", {
     year: "numeric",
     month: "short",
@@ -169,7 +188,7 @@ function LoginCard({
           Admin Access
         </h1>
         <p className="text-sm text-muted-foreground mb-6">
-          Sign in with Internet Identity to manage case studies and view leads.
+          Sign in to manage case studies and view leads.
         </p>
         <Button
           onClick={onLogin}
@@ -183,7 +202,7 @@ function LoginCard({
               Connecting…
             </span>
           ) : (
-            "Login with Internet Identity"
+            "Login with Email"
           )}
         </Button>
       </div>
@@ -700,44 +719,42 @@ function CaseStudyForm({
 
 // ─── leads section ─────────────────────────────────────────────────────────────
 
-function LeadsSection({
-  actor,
-}: {
-  actor: { getContactSubmissions: () => Promise<ContactSubmission[]> } | null;
-}) {
+function LeadsSection() {
   const [leads, setLeads] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(false);
-  const [expandedLead, setExpandedLead] = useState<bigint | null>(null);
+  const [expandedLead, setExpandedLead] = useState<string | null>(null);
 
   const loadLeads = useCallback(async () => {
-    if (!actor) return;
     setLoading(true);
     try {
-      const data = await actor.getContactSubmissions();
-      // Sort newest first
-      const sorted = [...data].sort((a, b) =>
-        b.submittedAt > a.submittedAt ? 1 : -1,
-      );
-      setLeads(sorted);
-    } catch {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setLeads(data || []);
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to load leads");
     } finally {
       setLoading(false);
     }
-  }, [actor]);
+  }, []);
 
   useEffect(() => {
     loadLeads();
   }, [loadLeads]);
 
-  const serviceColor: Record<ServiceInterest, string> = {
-    [ServiceInterest.dataExtraction]:
+  const serviceColor: Record<string, string> = {
+    data_extraction:
       "border-blue-500/30 text-blue-400 bg-blue-500/10",
-    [ServiceInterest.dataEngineering]:
+    data_engineering:
       "border-violet-500/30 text-violet-400 bg-violet-500/10",
-    [ServiceInterest.aiAnalytics]:
+    ai_analytics:
       "border-primary/30 text-primary bg-primary/10",
-    [ServiceInterest.other]: "border-border text-muted-foreground bg-muted/40",
+    other: "border-border text-muted-foreground bg-muted/40",
   };
 
   if (loading) {
@@ -806,9 +823,8 @@ function LeadsSection({
         </thead>
         <tbody>
           {leads.map((lead, idx) => (
-            <>
+            <React.Fragment key={lead.id}>
               <tr
-                key={String(lead.id)}
                 className="border-b border-border/50 last:border-0 hover:bg-muted/20 transition-smooth cursor-pointer"
                 data-ocid={`admin.leads.row.item.${idx + 1}`}
                 onClick={() =>
@@ -846,14 +862,14 @@ function LeadsSection({
                 <td className="px-5 py-3.5 hidden md:table-cell">
                   <Badge
                     variant="outline"
-                    className={`text-xs font-medium ${serviceColor[lead.serviceInterest]}`}
+                    className={`text-xs font-medium ${serviceColor[lead.service_interest] || serviceColor.other}`}
                   >
-                    {SERVICE_LABELS[lead.serviceInterest]}
+                    {SERVICE_LABELS[lead.service_interest] || lead.service_interest}
                   </Badge>
                 </td>
                 <td className="px-5 py-3.5 hidden lg:table-cell">
                   <span className="text-xs text-muted-foreground font-mono">
-                    {formatTimestamp(lead.submittedAt)}
+                    {formatTimestamp(lead.created_at)}
                   </span>
                 </td>
                 <td className="px-5 py-3.5 text-right">
@@ -874,7 +890,7 @@ function LeadsSection({
               </tr>
               {expandedLead === lead.id && (
                 <tr
-                  key={`${String(lead.id)}-expanded`}
+                  key={`${lead.id}-expanded`}
                   className="border-b border-border/50 bg-muted/10"
                   data-ocid={`admin.leads.expanded.item.${idx + 1}`}
                 >
@@ -893,13 +909,13 @@ function LeadsSection({
                         <div className="flex items-center gap-2 md:hidden">
                           <Badge
                             variant="outline"
-                            className={`text-xs font-medium ${serviceColor[lead.serviceInterest]}`}
+                            className={`text-xs font-medium ${serviceColor[lead.service_interest] || serviceColor.other}`}
                           >
-                            {SERVICE_LABELS[lead.serviceInterest]}
+                            {SERVICE_LABELS[lead.service_interest] || lead.service_interest}
                           </Badge>
                         </div>
                         <div className="text-xs text-muted-foreground lg:hidden font-mono">
-                          {formatTimestamp(lead.submittedAt)}
+                          {formatTimestamp(lead.created_at)}
                         </div>
                       </div>
                       <div className="md:col-span-2">
@@ -907,7 +923,7 @@ function LeadsSection({
                           Project Description
                         </p>
                         <p className="text-sm text-foreground leading-relaxed bg-background/60 rounded-lg p-3 border border-border/50">
-                          {lead.projectDescription || (
+                          {lead.project_description || (
                             <span className="italic text-muted-foreground">
                               No description provided.
                             </span>
@@ -918,7 +934,7 @@ function LeadsSection({
                   </td>
                 </tr>
               )}
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>
@@ -929,9 +945,6 @@ function LeadsSection({
 // ─── main admin page ───────────────────────────────────────────────────────────
 
 export function AdminCaseStudiesPage() {
-  const { login, clear, isAuthenticated, isLoggingIn, isInitializing } =
-    useInternetIdentity();
-  const { actor, isFetching } = useActor(createActor);
   const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<AdminTab>("case-studies");
@@ -941,6 +954,7 @@ export function AdminCaseStudiesPage() {
   >("loading");
   const [studies, setStudies] = useState<CaseStudy[]>([]);
   const [studiesLoading, setStudiesLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<CaseStudy | null>(null);
@@ -951,43 +965,94 @@ export function AdminCaseStudiesPage() {
 
   const [form, dispatch] = useReducer(formReducer, EMPTY_FORM);
 
-  // Determine auth state
+  // Check authentication on mount
   useEffect(() => {
-    if (isInitializing) {
-      setAuthState("loading");
-      return;
-    }
-    if (!isAuthenticated) {
-      setAuthState("unauthenticated");
-      return;
-    }
-    if (!actor || isFetching) return;
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    actor
-      .isCallerAdmin()
-      .then((isAdmin) => {
-        setAuthState(isAdmin ? "authorized" : "denied");
-      })
-      .catch(() => setAuthState("denied"));
-  }, [isAuthenticated, isInitializing, actor, isFetching]);
+      if (session) {
+        // Check if user is admin (you can implement admin check logic here)
+        // For now, we'll just check if they're authenticated
+        // You can add a custom claim or check an admin table
+        setAuthState("authorized");
+      } else {
+        setAuthState("unauthenticated");
+      }
+    };
+
+    checkUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (session) {
+          setAuthState("authorized");
+        } else {
+          setAuthState("unauthenticated");
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Load studies when authorized
   const loadStudies = useCallback(async () => {
-    if (!actor || authState !== "authorized") return;
     setStudiesLoading(true);
+  
     try {
-      const data = await actor.getAllCaseStudies();
-      setStudies(data);
-    } catch {
-      toast.error("Failed to load case studies");
+      // Make sure the table name is exactly "case_studies" not "public_case_studies"
+      const { data, error } = await supabase
+        .from("case_studie")  // ← Just "case_studies", no "public_" prefix
+        .select("*")
+        .order("created_at", { ascending: false });
+  
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+  
+      console.log("Loaded case studies:", data);
+      setStudies(data || []);
+    } catch (err) {
+      console.error("Failed to load case studies:", err);
+      toast.error(`Failed to load case studies: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setStudiesLoading(false);
     }
-  }, [actor, authState]);
+  }, []);
 
   useEffect(() => {
-    loadStudies();
-  }, [loadStudies]);
+    if (authState === "authorized") {
+      loadStudies();
+    }
+  }, [authState, loadStudies]);
+
+  const handleLogin = async () => {
+    setIsLoggingIn(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/admin`,
+        },
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+      toast.error("Login failed. Please try again.");
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/admin-login";
+  };
 
   function openCreate() {
     setEditTarget(null);
@@ -1007,8 +1072,6 @@ export function AdminCaseStudiesPage() {
   }
 
   async function handleSubmit() {
-    if (!actor) return;
-
     const tools = parseTools(form.tools);
     const validResults = form.results.filter(
       (r) => r.metric.trim() && r.description.trim(),
@@ -1035,51 +1098,57 @@ export function AdminCaseStudiesPage() {
     setIsSubmitting(true);
     try {
       if (editTarget) {
-        const input: UpdateCaseStudyInput = {
-          title: form.title.trim(),
-          clientType: form.clientType.trim(),
-          industry: form.industry.trim(),
-          keyMetric: form.keyMetric.trim(),
-          keyMetricLabel: form.keyMetricLabel.trim(),
-          iconName: form.iconName,
-          problem: form.problem.trim(),
-          approach: form.approach.trim(),
-          tools,
-          results: validResults,
-        };
-        const result = await actor.updateCaseStudy(editTarget.id, input);
-        if (result.__kind__ === "ok") {
-          toast.success("Case study updated successfully");
-          queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
-          await loadStudies();
-          closeSheet();
-        } else {
-          toast.error("Update failed", { description: result.err });
-        }
+        // Update case study
+        const { error } = await supabase
+          .from("case_studie")
+          .update({
+            title: form.title.trim(),
+            client_type: form.clientType.trim(),
+            industry: form.industry.trim(),
+            key_metric: form.keyMetric.trim(),
+            key_metric_label: form.keyMetricLabel.trim(),
+            icon_name: form.iconName,
+            problem: form.problem.trim(),
+            approach: form.approach.trim(),
+            tools: tools,
+            results: validResults,
+          })
+          .eq("id", editTarget.id);
+
+        if (error) throw error;
+
+        toast.success("Case study updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
+        await loadStudies();
+        closeSheet();
       } else {
-        const input: CreateCaseStudyInput = {
-          title: form.title.trim(),
-          clientType: form.clientType.trim(),
-          industry: form.industry.trim(),
-          keyMetric: form.keyMetric.trim(),
-          keyMetricLabel: form.keyMetricLabel.trim(),
-          iconName: form.iconName,
-          problem: form.problem.trim(),
-          approach: form.approach.trim(),
-          tools,
-          results: validResults,
-        };
-        const result = await actor.createCaseStudy(input);
-        if (result.__kind__ === "ok") {
-          toast.success("Case study created successfully");
-          queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
-          await loadStudies();
-          closeSheet();
-        } else {
-          toast.error("Create failed", { description: result.err });
-        }
+        // Create case study
+        const { error } = await supabase
+          .from("case_studie")
+          .insert([
+            {
+              title: form.title.trim(),
+              client_type: form.clientType.trim(),
+              industry: form.industry.trim(),
+              key_metric: form.keyMetric.trim(),
+              key_metric_label: form.keyMetricLabel.trim(),
+              icon_name: form.iconName,
+              problem: form.problem.trim(),
+              approach: form.approach.trim(),
+              tools: tools,
+              results: validResults,
+            },
+          ]);
+
+        if (error) throw error;
+
+        toast.success("Case study created successfully");
+        queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
+        await loadStudies();
+        closeSheet();
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -1087,20 +1156,21 @@ export function AdminCaseStudiesPage() {
   }
 
   async function handleDelete() {
-    if (!actor || !deleteTarget) return;
+    if (!deleteTarget) return;
     setIsDeleting(true);
     try {
-      const ok = await actor.deleteCaseStudy(deleteTarget.id);
-      if (ok) {
-        toast.success("Case study deleted");
-        queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
-        await loadStudies();
-      } else {
-        toast.error("Delete failed", {
-          description: "The case study could not be deleted.",
-        });
-      }
-    } catch {
+      const { error } = await supabase
+        .from("case_studie")
+        .delete()
+        .eq("id", deleteTarget.id);
+
+      if (error) throw error;
+
+      toast.success("Case study deleted");
+      queryClient.invalidateQueries({ queryKey: ["caseStudies"] });
+      await loadStudies();
+    } catch (err) {
+      console.error(err);
       toast.error("An error occurred during deletion.");
     } finally {
       setIsDeleting(false);
@@ -1127,11 +1197,11 @@ export function AdminCaseStudiesPage() {
   }
 
   if (authState === "unauthenticated") {
-    return <LoginCard onLogin={login} isLoggingIn={isLoggingIn} />;
+    return <LoginCard onLogin={handleLogin} isLoggingIn={isLoggingIn} />;
   }
 
   if (authState === "denied") {
-    return <AccessDenied onLogout={clear} />;
+    return <AccessDenied onLogout={handleLogout} />;
   }
 
   return (
@@ -1167,7 +1237,7 @@ export function AdminCaseStudiesPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={clear}
+              onClick={handleLogout}
               className="text-muted-foreground hover:text-foreground gap-2"
               data-ocid="admin.dashboard.logout_button"
             >
@@ -1311,11 +1381,11 @@ export function AdminCaseStudiesPage() {
                   <tbody>
                     {studies.map((study, idx) => {
                       const IconComp =
-                        ICON_OPTIONS.find((o) => o.value === study.iconName)
+                        ICON_OPTIONS.find((o) => o.value === study.icon_name)
                           ?.Icon ?? TrendingUp;
                       return (
                         <tr
-                          key={String(study.id)}
+                          key={study.id}
                           className="border-b border-border/50 last:border-0 hover:bg-muted/20 transition-smooth"
                           data-ocid={`admin.dashboard.row.item.${idx + 1}`}
                         >
@@ -1339,15 +1409,15 @@ export function AdminCaseStudiesPage() {
                           </td>
                           <td className="px-5 py-3.5 hidden sm:table-cell">
                             <span className="font-display font-bold text-primary">
-                              {study.keyMetric}
+                              {study.key_metric}
                             </span>
                             <span className="text-xs text-muted-foreground ml-1">
-                              {study.keyMetricLabel}
+                              {study.key_metric_label}
                             </span>
                           </td>
                           <td className="px-5 py-3.5 hidden lg:table-cell">
                             <span className="text-xs font-mono text-muted-foreground">
-                              {study.iconName}
+                              {study.icon_name}
                             </span>
                           </td>
                           <td className="px-5 py-3.5 text-right">
@@ -1395,7 +1465,7 @@ export function AdminCaseStudiesPage() {
                 </p>
               </div>
             </div>
-            <LeadsSection actor={actor} />
+            <LeadsSection />
           </div>
         )}
       </main>
