@@ -403,8 +403,8 @@ export function ServicesPage() {
   return (
     <>
       <SEO
-        title="AI Automation, Web Scraping & Data Engineering Services | OmniDataX"
-        description="Professional AI automation, web scraping, ETL pipelines, data engineering, dashboard development, machine learning, and custom software solutions by OmniDataX."
+        title="Services | OmniDataX"
+        description="AI Automation, Web Scraping, ETL Pipelines, Data Engineering and Dashboard Development services."
       />
 
       <div className="flex flex-col" data-ocid="services.page">

@@ -141,11 +141,13 @@ export function ContactPage() {
   };
 
   return (
-    <SEO
-      title="Contact OmniDataX"
-      description="Get in touch with OmniDataX for AI automation, data engineering, web scraping, and custom software development."
-    />
-    <div className="pt-16">
+    <>
+      <SEO
+        title="Contact OmniDataX"
+        description="Get in touch with OmniDataX for AI automation, data engineering, web scraping, and custom software development."
+      />
+  
+      <div className="pt-16">
       {/* Header */}
       <section
         className="py-20 bg-card border-b border-border"
@@ -457,6 +459,7 @@ export function ContactPage() {
           </div>
         </section>
       </ScrollSectionReveal>
-    </div>
+      </div>
+    </>
   );
 }

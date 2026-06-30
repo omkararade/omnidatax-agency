@@ -93,11 +93,13 @@ const team = [
 
 export function AboutPage() {
   return (
-    <SEO
-      title="About OmniDataX"
-      description="Learn about OmniDataX, our mission, expertise, and how we help businesses automate with AI and data engineering."
-    />
-    <div className="pt-16">
+    <>
+      <SEO
+        title="About OmniDataX"
+        description="Learn about OmniDataX, our mission, expertise, and how we help businesses automate with AI and data engineering."
+      />
+
+      <div className="pt-16">
       {/* Hero */}
       <section
         className="py-20 bg-card border-b border-border"
@@ -409,7 +411,8 @@ export function AboutPage() {
             </Button>
           </motion.div>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

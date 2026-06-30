@@ -402,11 +402,12 @@ export function CaseStudiesPage() {
   const studyCount = isLoading ? "—" : studies.length.toString();
 
   return (
-    <SEO
-      title="Case Studies | OmniDataX"
-      description="See how OmniDataX has delivered AI automation and data engineering solutions for businesses across multiple industries."
-    />
-    <div className="pt-16 bg-background min-h-screen">
+    <>
+      <SEO
+        title="Case Studies | OmniDataX"
+        description="See how OmniDataX has delivered AI automation and data engineering solutions for businesses across multiple industries."
+      />
+      <div className="pt-16 bg-background min-h-screen">
       {/* Hero header */}
       <section
         className="relative bg-card border-b border-border overflow-hidden"
@@ -581,7 +582,8 @@ export function CaseStudiesPage() {
             </div>
           </motion.div>
         </div>
-      </section>
+        </section>
     </div>
-  );
+  </>
+);
 }
