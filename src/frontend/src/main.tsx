@@ -1,3 +1,4 @@
+import { HelmetProvider } from "react-helmet-async";
 import { InternetIdentityProvider } from "@caffeineai/core-infrastructure";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
@@ -16,7 +17,7 @@ declare global {
 
 const queryClient = new QueryClient();
 
-import { HelmetProvider } from "react-helmet-async";
+
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
@@ -25,5 +26,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <App />
       </InternetIdentityProvider>
     </QueryClientProvider>
-  </HelmetProvider>,
+  </HelmetProvider>
 );
