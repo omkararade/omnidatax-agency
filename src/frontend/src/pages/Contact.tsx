@@ -1,4 +1,4 @@
-
+import SEO from "@/components/SEO";
 import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,6 +141,10 @@ export function ContactPage() {
   };
 
   return (
+    <SEO
+      title="Contact OmniDataX"
+      description="Get in touch with OmniDataX for AI automation, data engineering, web scraping, and custom software development."
+    />
     <div className="pt-16">
       {/* Header */}
       <section

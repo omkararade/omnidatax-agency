@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -401,6 +402,10 @@ export function CaseStudiesPage() {
   const studyCount = isLoading ? "—" : studies.length.toString();
 
   return (
+    <SEO
+      title="Case Studies | OmniDataX"
+      description="See how OmniDataX has delivered AI automation and data engineering solutions for businesses across multiple industries."
+    />
     <div className="pt-16 bg-background min-h-screen">
       {/* Hero header */}
       <section

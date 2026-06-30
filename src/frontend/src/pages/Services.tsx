@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
@@ -400,7 +401,13 @@ function ProcessStepCard({
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function ServicesPage() {
   return (
-    <div className="flex flex-col" data-ocid="services.page">
+    <>
+      <SEO
+        title="AI Automation, Web Scraping & Data Engineering Services | OmniDataX"
+        description="Professional AI automation, web scraping, ETL pipelines, data engineering, dashboard development, machine learning, and custom software solutions by OmniDataX."
+      />
+
+      <div className="flex flex-col" data-ocid="services.page">
       {/* ── Hero ── */}
       <section className="relative bg-card border-b border-border overflow-hidden py-24 px-4 pt-32">
         <div
@@ -775,7 +782,8 @@ export function ServicesPage() {
             ))}
           </motion.div>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }

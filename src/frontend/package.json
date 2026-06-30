@@ -92,6 +92,7 @@
     "tailwind-merge": "^2.5.2",
     "three": "^0.176.0",
     "vaul": "^1.1.2",
+    "vite-plugin-sitemap": "^0.8.2",
     "zustand": "~5.0.5"
   }
 }

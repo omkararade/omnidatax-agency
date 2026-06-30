@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Hero3D } from "@/components/Hero3D";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
@@ -70,19 +71,30 @@ const METRICS_DATA = [
   },
 ];
 
+import SEO from "@/components/SEO";
+
 export function HomePage() {
   return (
-    <div className="flex flex-col">
-      <HeroSection />
-      <MetricsBannerSection />
-      <ServicesSection />
-      <UseCasesSection />
-      <ScrollSectionReveal variant="data-nodes">
-        <TestimonialsSection />
-      </ScrollSectionReveal>
-      <BlogSection />
-      <CtaSection />
-    </div>
+    <>
+      <SEO
+        title="OmniDataX | AI Automation, Web Scraping & Data Engineering"
+        description="OmniDataX helps businesses automate workflows with AI, web scraping, ETL pipelines, data engineering, machine learning, dashboards, and custom software development."
+      />
+
+      <div className="flex flex-col">
+        <HeroSection />
+        <MetricsBannerSection />
+        <ServicesSection />
+        <UseCasesSection />
+
+        <ScrollSectionReveal variant="data-nodes">
+          <TestimonialsSection />
+        </ScrollSectionReveal>
+
+        <BlogSection />
+        <CtaSection />
+      </div>
+    </>
   );
 }
 

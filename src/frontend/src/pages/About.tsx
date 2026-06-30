@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { METRICS } from "@/lib/constants";
@@ -92,6 +93,10 @@ const team = [
 
 export function AboutPage() {
   return (
+    <SEO
+      title="About OmniDataX"
+      description="Learn about OmniDataX, our mission, expertise, and how we help businesses automate with AI and data engineering."
+    />
     <div className="pt-16">
       {/* Hero */}
       <section
