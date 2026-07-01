@@ -7,6 +7,7 @@ import {
   createRouter,
   useRouterState,
 } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { useRef } from "react";
 import { Footer } from "./components/Footer";
 import { Nav } from "./components/Nav";
@@ -15,12 +16,12 @@ import { PageTransition } from "./components/PageTransition";
 import ScrollDataFlow from "./components/ScrollDataFlow";
 import { AboutPage } from "./pages/About";
 import { AdminCaseStudiesPage } from "./pages/AdminCaseStudies";
+import { AdminLoginPage } from "./pages/AdminLogin";
 import { CaseStudiesPage } from "./pages/CaseStudies";
 import { ContactPage } from "./pages/Contact";
 import { HomePage } from "./pages/Home";
 import { ServicesPage } from "./pages/Services";
 import { UseCasesPage } from "./pages/UseCases";
-import { AdminLoginPage } from "./pages/AdminLogin";
 
 function ScrollToTop() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -38,6 +39,7 @@ function RootShell() {
     <>
       <Outlet />
       <Toaster richColors position="bottom-right" />
+      <Analytics />
     </>
   );
 }
@@ -144,9 +146,7 @@ const routeTree = rootRoute.addChildren([
     contactRoute,
   ]),
 
-  adminLayoutRoute.addChildren([
-    adminCaseStudiesRoute,
-  ]),
+  adminLayoutRoute.addChildren([adminCaseStudiesRoute]),
 ]);
 
 const router = createRouter({ routeTree });
