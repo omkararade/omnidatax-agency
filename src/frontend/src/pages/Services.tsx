@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Code2,
+  ContactRound,
   Cpu,
   Database,
   GitBranch,
@@ -30,6 +31,7 @@ interface ServiceCategory {
   title: string;
   description: string;
   features: string[];
+  tools: { name: string; mark: string }[];
   deliverables: { label: string; icon: React.ReactNode }[];
   outcomes: { value: string; label: string }[];
   borderClass: string;
@@ -56,12 +58,18 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     badge: "Foundation Layer",
     title: "Data Extraction",
     description:
-      "Large-scale web scraping, API integrations, and structured data collection from any source on the web — at any scale, without disruption.",
+      "Authorized API integrations and structured collection from public or client-owned sources, designed around source terms, access policies, and sustainable rate limits.",
     features: [
-      "Custom web crawlers built for your targets",
+      "Custom parsers for permitted public-web and client-owned sources",
       "Multi-source API aggregation & normalization",
-      "Anti-bot bypass with proxy rotation",
-      "Scheduled & real-time crawl pipelines",
+      "Robots.txt, rate-limit & access-policy safeguards",
+      "Scheduled & real-time collection pipelines",
+    ],
+    tools: [
+      { name: "APIs", mark: "API" },
+      { name: "BeautifulSoup", mark: "BS" },
+      { name: "Selenium", mark: "SE" },
+      { name: "HTML Parsing", mark: "<>" },
     ],
     deliverables: [
       { label: "CSV / JSON Exports", icon: <Package className="w-4 h-4" /> },
@@ -87,6 +95,13 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
       "Data deduplication, normalization & enrichment",
       "Cloud warehouse integration (BigQuery, Snowflake)",
       "Data quality monitoring & alerting",
+    ],
+    tools: [
+      { name: "Python", mark: "Py" },
+      { name: "BigQuery", mark: "BQ" },
+      { name: "SQL", mark: "SQL" },
+      { name: "MongoDB", mark: "M" },
+      { name: "AWS", mark: "AWS" },
     ],
     deliverables: [
       {
@@ -116,6 +131,12 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
       "LLM-powered pipelines (GPT-4, Claude, custom fine-tunes)",
       "Interactive dashboards & demand forecasting models",
     ],
+    tools: [
+      { name: "n8n", mark: "n8n" },
+      { name: "Zapier", mark: "Z" },
+      { name: "Claude Code", mark: "CC" },
+      { name: "Codex", mark: "⌘" },
+    ],
     deliverables: [
       {
         label: "AI Agent Deployments",
@@ -135,6 +156,36 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
     borderClass: "border-border hover:border-primary/60",
   },
   {
+    id: "crm-automation",
+    icon: <ContactRound className="w-8 h-8" />,
+    badge: "Revenue Operations",
+    title: "CRM Setup & Automation",
+    description:
+      "CRM foundations and automated customer journeys that keep leads, teams, and follow-ups in sync from first touch to closed deal.",
+    features: [
+      "CRM setup, migration & data cleanup",
+      "Lead capture, routing & lifecycle automation",
+      "Sales pipelines, reminders & follow-up sequences",
+      "Connected reporting for marketing and sales teams",
+    ],
+    tools: [
+      { name: "GoHighLevel", mark: "GHL" },
+      { name: "Zoho CRM", mark: "ZO" },
+      { name: "Monday.com", mark: "mo" },
+    ],
+    deliverables: [
+      { label: "Configured CRM", icon: <ContactRound className="w-4 h-4" /> },
+      { label: "Automated Journeys", icon: <Zap className="w-4 h-4" /> },
+      { label: "Sales Dashboards", icon: <BarChart2 className="w-4 h-4" /> },
+    ],
+    outcomes: [
+      { value: "0", label: "Missed Follow-ups" },
+      { value: "1", label: "Source of Truth" },
+      { value: "24/7", label: "Lead Routing" },
+    ],
+    borderClass: "border-border hover:border-primary/60",
+  },
+  {
     id: "web-dev",
     icon: <Code2 className="w-8 h-8" />,
     badge: "Web Development",
@@ -148,6 +199,12 @@ const SERVICE_CATEGORIES: ServiceCategory[] = [
       "CI/CD pipelines & cloud deployment",
       "SEO optimization & Core Web Vitals",
       "Third-party integrations & automation hooks",
+    ],
+    tools: [
+      { name: "React", mark: "R" },
+      { name: "TypeScript", mark: "TS" },
+      { name: "REST APIs", mark: "API" },
+      { name: "MongoDB", mark: "M" },
     ],
     deliverables: [
       { label: "Production Web App", icon: <Globe className="w-4 h-4" /> },
@@ -257,8 +314,9 @@ const fadeLeft = {
 function ServiceCard({ svc, index }: { svc: ServiceCategory; index: number }) {
   return (
     <motion.div
+      id={svc.id}
       data-ocid={`services.${svc.id}.card`}
-      className={`relative rounded-2xl border bg-card p-8 flex flex-col gap-6 transition-smooth overflow-hidden group ${svc.borderClass}`}
+      className={`relative rounded-2xl border bg-card p-8 flex flex-col gap-6 transition-smooth overflow-hidden group scroll-mt-24 ${svc.borderClass}`}
       variants={fadeUp}
       initial="hidden"
       whileInView="visible"
@@ -304,6 +362,30 @@ function ServiceCard({ svc, index }: { svc: ServiceCategory; index: number }) {
           </li>
         ))}
       </ul>
+
+      <div>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-3 font-mono">
+          Tools & Platforms
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {svc.tools.map((tool) => (
+            <span
+              key={tool.name}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-2.5 py-1.5 text-xs font-medium text-foreground/80"
+            >
+              <span className="flex h-5 min-w-5 items-center justify-center rounded bg-primary/10 px-1 font-mono text-[10px] font-bold text-primary">
+                {tool.mark}
+              </span>
+              {tool.name}
+            </span>
+          ))}
+        </div>
+        {svc.id === "data-extraction" && (
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            We work with public, licensed, or client-authorized data sources.
+          </p>
+        )}
+      </div>
 
       <div className="border-t border-border" />
 
@@ -508,11 +590,11 @@ export function ServicesPage() {
                 Service Categories
               </p>
               <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-                Three Layers of Data Mastery
+                Five Ways We Build Your Advantage
               </h2>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
               {SERVICE_CATEGORIES.map((svc, i) => (
                 <ServiceCard key={svc.id} svc={svc} index={i} />
               ))}

@@ -11,9 +11,8 @@ import type {
 export const COMPANY_NAME = "OmniDataX";
 export const COMPANY_TAGLINE = "Automated Data Extraction & AI Analytics";
 export const COMPANY_EMAIL = "admin@omnidatax.com";
-export const COMPANY_LINKEDIN = "https://linkedin.com";
-export const COMPANY_TWITTER = "https://twitter.com";
-export const COMPANY_GITHUB = "https://github.com";
+export const COMPANY_LINKEDIN = "https://www.linkedin.com/company/omnidatax/";
+export const COMPANY_GITHUB = "https://github.com/omnidatax";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
@@ -28,10 +27,10 @@ export const FOOTER_SECTIONS: FooterSection[] = [
   {
     title: "Services",
     links: [
-      { label: "Web Scraping", href: "/services" },
-      { label: "Data Engineering", href: "/services" },
-      { label: "AI Analytics", href: "/services" },
-      { label: "ETL Pipelines", href: "/services" },
+      { label: "Data Extraction", href: "/services#data-extraction" },
+      { label: "Data Engineering", href: "/services#data-engineering" },
+      { label: "AI Agents", href: "/services#ai-analytics" },
+      { label: "CRM Automation", href: "/services#crm-automation" },
     ],
   },
   {
@@ -46,10 +45,10 @@ export const FOOTER_SECTIONS: FooterSection[] = [
   {
     title: "Resources",
     links: [
-      { label: "Sample Data", href: "/contact" },
-      { label: "Blog", href: "/" },
-      { label: "Documentation", href: "/" },
-      { label: "FAQ", href: "/contact" },
+      { label: "Sample Data", href: "/resources#sample-data" },
+      { label: "Blog", href: "/resources#blog" },
+      { label: "Documentation", href: "/resources#documentation" },
+      { label: "FAQ", href: "/resources#faq" },
     ],
   },
 ];
@@ -104,6 +103,23 @@ export const SERVICES: Service[] = [
       "Fully automated decision-making",
       "AI-driven insights at scale",
       "24/7 agent runtime, zero manual work",
+    ],
+  },
+  {
+    id: "crm-automation",
+    title: "CRM Setup & Automation",
+    description:
+      "CRM setup, connected lead journeys, and sales automation that keep every customer touchpoint organized.",
+    icon: "ContactRound",
+    deliverables: [
+      "Configured CRM workspace",
+      "Lead routing & follow-up automation",
+      "Sales pipeline dashboards",
+    ],
+    outcomes: [
+      "One source of truth for customer data",
+      "Faster lead response and handoffs",
+      "Consistent follow-up at every stage",
     ],
   },
   {

@@ -3,11 +3,10 @@ import {
   COMPANY_GITHUB,
   COMPANY_LINKEDIN,
   COMPANY_NAME,
-  COMPANY_TWITTER,
   FOOTER_SECTIONS,
 } from "@/lib/constants";
 import { Link } from "@tanstack/react-router";
-import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -49,16 +48,6 @@ export function Footer() {
             {/* Social icons */}
             <div className="flex items-center gap-3 mt-2">
               <a
-                href={COMPANY_TWITTER}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-md bg-muted/50 hover:bg-primary/20 hover:text-primary border border-border flex items-center justify-center text-muted-foreground transition-smooth"
-                aria-label="Twitter"
-                data-ocid="footer.twitter.link"
-              >
-                <Twitter className="w-3.5 h-3.5" />
-              </a>
-              <a
                 href={COMPANY_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -90,12 +79,12 @@ export function Footer() {
               <ul className="flex flex-col gap-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      to={link.href}
+                    <a
+                      href={link.href}
                       className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   </li>
                 ))}
               </ul>

@@ -15,9 +15,11 @@ import { PageTransition } from "./components/PageTransition";
 import ScrollDataFlow from "./components/ScrollDataFlow";
 import { AboutPage } from "./pages/About";
 import { AdminCaseStudiesPage } from "./pages/AdminCaseStudies";
+import { AdminCRMPage } from "./pages/AdminCRM";
 import { CaseStudiesPage } from "./pages/CaseStudies";
 import { ContactPage } from "./pages/Contact";
 import { HomePage } from "./pages/Home";
+import { ResourcesPage } from "./pages/Resources";
 import { ServicesPage } from "./pages/Services";
 import { UseCasesPage } from "./pages/UseCases";
 import { AdminLoginPage } from "./pages/AdminLogin";
@@ -111,6 +113,11 @@ const contactRoute = createRoute({
   path: "/contact",
   component: ContactPage,
 });
+const resourcesRoute = createRoute({
+  getParentRoute: () => publicLayoutRoute,
+  path: "/resources",
+  component: ResourcesPage,
+});
 
 const adminLoginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -130,6 +137,11 @@ const adminCaseStudiesRoute = createRoute({
   path: "/admin/case-studies",
   component: AdminCaseStudiesPage,
 });
+const adminCrmRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/admin/crm",
+  component: AdminCRMPage,
+});
 
 // Single unified route tree
 const routeTree = rootRoute.addChildren([
@@ -142,10 +154,12 @@ const routeTree = rootRoute.addChildren([
     caseStudiesRoute,
     aboutRoute,
     contactRoute,
+    resourcesRoute,
   ]),
 
   adminLayoutRoute.addChildren([
     adminCaseStudiesRoute,
+    adminCrmRoute,
   ]),
 ]);
 

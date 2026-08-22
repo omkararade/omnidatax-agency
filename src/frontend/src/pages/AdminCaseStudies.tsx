@@ -20,10 +20,12 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   BarChart2,
+  ContactRound,
   Inbox,
   LogOut,
   type LucideProps,
@@ -1223,6 +1225,17 @@ export function AdminCaseStudiesPage() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground gap-2"
+            >
+              <Link to="/admin/crm">
+                <ContactRound className="w-4 h-4" />
+                <span className="hidden sm:inline">CRM</span>
+              </Link>
+            </Button>
             {activeTab === "case-studies" && (
               <Button
                 onClick={openCreate}

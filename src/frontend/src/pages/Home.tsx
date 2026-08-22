@@ -11,6 +11,7 @@ import {
   BarChart2,
   CheckCircle2,
   Code2,
+  ContactRound,
   Database,
   Eye,
   GitBranch,
@@ -29,6 +30,7 @@ const serviceIcons: Record<string, IconComponent> = {
   GitBranch,
   TrendingUp,
   Code2,
+  ContactRound,
 };
 
 const useCaseIcons: Record<string, IconComponent> = {
@@ -334,7 +336,7 @@ function ServicesSection() {
               WHAT WE BUILD
             </Badge>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Four Core Services
+              Five Core Services
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               From raw data collection to business-ready intelligence — we own
@@ -342,7 +344,7 @@ function ServicesSection() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {SERVICES.map((service, i) => {
               const Icon: IconComponent =
                 serviceIcons[service.icon] ?? Database;

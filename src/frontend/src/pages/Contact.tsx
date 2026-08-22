@@ -46,6 +46,7 @@ const serviceOptions = [
   { value: "Data Extraction", label: "Data Extraction" },
   { value: "Data Engineering", label: "Data Engineering" },
   { value: "AI & Analytics", label: "AI & Analytics" },
+  { value: "CRM Setup & Automation", label: "CRM Setup & Automation" },
   { value: "Other", label: "Not Sure Yet" },
 ];
 
@@ -54,6 +55,35 @@ const trustBadges = [
   { icon: Users, label: "100+ Clients", sublabel: "Across 12 industries" },
   { icon: Star, label: "5-Star Rated", sublabel: "Verified client reviews" },
 ];
+
+async function sendContactEmailNotification(form: FormState): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://formsubmit.co/ajax/${COMPANY_EMAIL}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _subject: "New OmniDataX contact form submission",
+          _replyto: form.email.trim(),
+          name: form.name.trim(),
+          email: form.email.trim(),
+          service_interest: form.serviceInterest || "Other",
+          message: form.projectDescription.trim(),
+          source: "OmniDataX website contact form",
+        }),
+      },
+    );
+
+    return response.ok;
+  } catch (err) {
+    console.error("Email notification failed", err);
+    return false;
+  }
+}
 
 export function ContactPage() {
 
@@ -108,6 +138,8 @@ export function ContactPage() {
         throw error;
       }
   
+      const emailSent = await sendContactEmailNotification(form);
+
       setSubmitted(true);
   
       setForm({
@@ -118,8 +150,9 @@ export function ContactPage() {
       });
   
       toast.success("Message sent!", {
-        description:
-          "We'll review your project and reach out within 24 hours.",
+        description: emailSent
+          ? `Saved to CRM and sent to ${COMPANY_EMAIL}.`
+          : "Saved to CRM. Email notification may need first-time activation.",
       });
     } catch (err) {
       console.error(err);
