@@ -45,6 +45,7 @@ import { toast } from "sonner";
 
 type AdminTab = "case-studies" | "leads";
 type IconName = "trending" | "zap" | "bar" | "cart";
+type ThumbnailType = "image" | "video" | "document";
 
 interface CaseStudyResult {
   metric: string;
@@ -63,6 +64,10 @@ interface CaseStudy {
   approach: string;
   tools: string[];
   results: CaseStudyResult[];
+  thumbnail_url?: string | null;
+  thumbnail_type?: ThumbnailType | null;
+  external_url?: string | null;
+  external_link_label?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +92,10 @@ interface FormState {
   approach: string;
   tools: string;
   results: CaseStudyResult[];
+  thumbnailUrl: string;
+  thumbnailType: ThumbnailType;
+  externalUrl: string;
+  externalLinkLabel: string;
 }
 
 const EMPTY_FORM: FormState = {
@@ -100,6 +109,10 @@ const EMPTY_FORM: FormState = {
   approach: "",
   tools: "",
   results: [{ metric: "", description: "" }],
+  thumbnailUrl: "",
+  thumbnailType: "image",
+  externalUrl: "",
+  externalLinkLabel: "",
 };
 
 type LucideIcon = React.ForwardRefExoticComponent<
@@ -141,7 +154,23 @@ function studyToForm(s: CaseStudy): FormState {
     approach: s.approach,
     tools: s.tools.join(", "),
     results: s.results.length ? s.results : [{ metric: "", description: "" }],
+    thumbnailUrl: s.thumbnail_url || "",
+    thumbnailType:
+      s.thumbnail_type === "video" || s.thumbnail_type === "document"
+        ? s.thumbnail_type
+        : "image",
+    externalUrl: s.external_url || "",
+    externalLinkLabel: s.external_link_label || "",
   };
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 function formatTimestamp(ts: string): string {
@@ -518,6 +547,103 @@ function CaseStudyForm({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Media + external link */}
+        <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-4">
+          <div>
+            <Label className="text-sm font-medium text-foreground">
+              Case Study Thumbnail
+            </Label>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Optional. Add a public image, video, or document URL to show as
+              the case study preview.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_150px] gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">
+                Asset URL
+              </Label>
+              <Input
+                type="url"
+                value={form.thumbnailUrl}
+                onChange={(e) =>
+                  dispatch({
+                    type: "set_field",
+                    field: "thumbnailUrl",
+                    value: e.target.value,
+                  })
+                }
+                placeholder="https://example.com/case-study-cover.jpg"
+                className="bg-background border-border"
+                data-ocid="admin.form.thumbnail_url.input"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">
+                Asset Type
+              </Label>
+              <Select
+                value={form.thumbnailType}
+                onValueChange={(value) =>
+                  dispatch({
+                    type: "set_field",
+                    field: "thumbnailType",
+                    value,
+                  })
+                }
+              >
+                <SelectTrigger
+                  className="bg-background border-border"
+                  data-ocid="admin.form.thumbnail_type.select"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="image">Image</SelectItem>
+                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem value="document">Document</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-sm font-medium text-foreground">
+              Read More Link
+            </Label>
+            <Input
+              type="url"
+              value={form.externalUrl}
+              onChange={(e) =>
+                dispatch({
+                  type: "set_field",
+                  field: "externalUrl",
+                  value: e.target.value,
+                })
+              }
+              placeholder="https://github.com/your-org/project"
+              className="bg-background border-border"
+              data-ocid="admin.form.external_url.input"
+            />
+            <Input
+              value={form.externalLinkLabel}
+              onChange={(e) =>
+                dispatch({
+                  type: "set_field",
+                  field: "externalLinkLabel",
+                  value: e.target.value,
+                })
+              }
+              placeholder="Optional button label (e.g. View on GitHub)"
+              className="bg-background border-border"
+              data-ocid="admin.form.external_link_label.input"
+            />
+            <p className="text-xs text-muted-foreground">
+              Link to the full post on GitHub, Substack, LinkedIn, or another
+              public destination.
+            </p>
+          </div>
         </div>
 
         {/* Problem */}
@@ -1078,6 +1204,8 @@ export function AdminCaseStudiesPage() {
     const validResults = form.results.filter(
       (r) => r.metric.trim() && r.description.trim(),
     );
+    const thumbnailUrl = form.thumbnailUrl.trim();
+    const externalUrl = form.externalUrl.trim();
 
     if (
       !form.title.trim() ||
@@ -1097,6 +1225,25 @@ export function AdminCaseStudiesPage() {
       return;
     }
 
+    if (thumbnailUrl && !isHttpUrl(thumbnailUrl)) {
+      toast.error("Thumbnail URL must start with http:// or https://");
+      return;
+    }
+
+    if (externalUrl && !isHttpUrl(externalUrl)) {
+      toast.error("Read more URL must start with http:// or https://");
+      return;
+    }
+
+    const mediaFields = {
+      thumbnail_url: thumbnailUrl || null,
+      thumbnail_type: thumbnailUrl ? form.thumbnailType : null,
+      external_url: externalUrl || null,
+      external_link_label: externalUrl
+        ? form.externalLinkLabel.trim() || null
+        : null,
+    };
+
     setIsSubmitting(true);
     try {
       if (editTarget) {
@@ -1114,6 +1261,7 @@ export function AdminCaseStudiesPage() {
             approach: form.approach.trim(),
             tools: tools,
             results: validResults,
+            ...mediaFields,
           })
           .eq("id", editTarget.id);
 
@@ -1139,6 +1287,7 @@ export function AdminCaseStudiesPage() {
               approach: form.approach.trim(),
               tools: tools,
               results: validResults,
+              ...mediaFields,
             },
           ]);
 
