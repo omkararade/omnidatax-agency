@@ -97,17 +97,6 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © {year} {COMPANY_NAME}. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Built with love using{" "}
-            <a
-              href={caffeineSrc}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary/70 hover:text-primary transition-smooth"
-            >
-              caffeine.ai
-            </a>
-          </p>
         </div>
       </div>
     </footer>

@@ -16,5 +16,59 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (() => {
+        const routes = {
+          "Web Scraping": ["Data Extraction", "/services#data-extraction"],
+          "Data Extraction": ["Data Extraction", "/services#data-extraction"],
+          "Data Engineering": ["Data Engineering", "/services#data-engineering"],
+          "AI Analytics": ["AI Agents", "/services#ai-analytics"],
+          "AI Agents": ["AI Agents", "/services#ai-analytics"],
+          "ETL Pipelines": ["CRM Automation", "/services#crm-automation"],
+          "CRM Automation": ["CRM Automation", "/services#crm-automation"],
+          "About Us": ["About Us", "/about"],
+          "Case Studies": ["Case Studies", "/case-studies"],
+          "Use Cases": ["Use Cases", "/use-cases"],
+          Contact: ["Contact", "/contact"],
+          "Sample Data": ["Sample Data", "/resources#sample-data"],
+          Blog: ["Blog", "/resources#blog"],
+          Documentation: ["Documentation", "/resources#documentation"],
+          FAQ: ["FAQ", "/resources#faq"],
+        };
+        const syncFooterLinks = () => {
+          document.querySelectorAll("footer a").forEach((anchor) => {
+            if (anchor.textContent?.trim() === "caffeine.ai") {
+              anchor.closest("p")?.remove();
+              return;
+            }
+            const socialLabel = anchor.getAttribute("aria-label");
+            if (socialLabel === "Twitter") {
+              anchor.remove();
+              return;
+            }
+            if (socialLabel === "LinkedIn") {
+              anchor.href = "https://www.linkedin.com/company/omnidatax/";
+              return;
+            }
+            if (socialLabel === "GitHub") {
+              anchor.href = "https://github.com/omnidatax";
+              return;
+            }
+            const key = (anchor.textContent || "").trim();
+            const route = routes[key];
+            if (!route) return;
+            anchor.href = route[1];
+            if (key === "Web Scraping" || key === "AI Analytics" || key === "ETL Pipelines") {
+              anchor.textContent = route[0];
+            }
+          });
+        };
+        new MutationObserver(syncFooterLinks).observe(document.getElementById("root"), {
+          childList: true,
+          subtree: true,
+        });
+        syncFooterLinks();
+      })();
+    </script>
   </body>
 </html>
